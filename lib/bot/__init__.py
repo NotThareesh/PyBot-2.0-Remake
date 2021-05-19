@@ -1,18 +1,17 @@
-from time import sleep
-from glob import glob
-from apscheduler.triggers.cron import CronTrigger
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from discord.ext.commands.errors import CommandNotFound
-from discord.ext.commands import Bot as BotBase
 from discord import Intents
-
+from discord.ext.commands import Bot as BotBase
+from discord.ext.commands.errors import CommandNotFound
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from glob import glob
+from time import sleep
 
 PREFIX = "!"
 OWNER_ID = [755362525125672990]
 COGS = [path.split("/")[-1][:-3] for path in glob("./lib/cogs/*.py")]
 
 
-class Ready():
+class Ready:
     def __init__(self):
         for cog in COGS:
             setattr(self, cog, False)
@@ -40,22 +39,18 @@ class Bot(BotBase):
         print("Setup Complete")
 
     def run(self):
-        self.TOKEN = "Nzc3NzM2Mjg2MzQ1NzU2NzQz.X7HxXA.RBsDDLiw3-_W7ft0hK_rl2N3Yhg"
-
+        token = "Nzc3NzM2Mjg2MzQ1NzU2NzQz.X7HxXA.RBsDDLiw3-_W7ft0hK_rl2N3Yhg"
         print("Running bot....")
         self.setup()
-        super().run(self.TOKEN, reconnect=True)
+        super().run(token, reconnect=True)
 
     async def warn(self):
+        await self.logs_channel.send("Remember to adhere to the rules!")
         await self.logs_channel.send("Remember to adhere to the rules!")
 
     @staticmethod
     async def on_connect():
         print("Bot Connected")
-
-    @staticmethod
-    async def on_disconnect():
-        print("Bot Disconnected")
 
     async def on_error(self, error, *args, **kwargs):
         if error == "on_command_error":
@@ -81,7 +76,7 @@ class Bot(BotBase):
             self.warn, CronTrigger(week="*", hour="0", minute="0", day_of_week="0", timezone="utc"))
 
         while not self.cogs_ready.all_ready:
-            await sleep(0.5)
+            sleep(0.5)
 
         print("Bot is Ready")
 

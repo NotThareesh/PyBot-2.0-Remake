@@ -1,6 +1,6 @@
-from aiohttp import request
+from discord.ext.commands import Cog, command, BucketType, cooldown
 from discord import Embed, Colour
-from discord.ext.commands import Cog, command
+from aiohttp import request
 import datetime
 
 
@@ -12,16 +12,18 @@ class Fun(Cog):
     async def on_ready(self):
         self.bot.cogs_ready.ready_up("fun")
 
-    @command(name="ping")
-    async def ping(self, ctx):
-        await ctx.send(f"Pong {round(self.bot.latency*1000)}ms")
+    @command(description="Displays the version of the bot", aliases=["info"])
+    @cooldown(1, 5, BucketType.user)
+    async def version(self, ctx):
+        await ctx.send("I am PyBot 2.0")
 
-    @command(name="clear", aliases=["purge"])
-    async def clear(self, ctx, purge_amount: int = 10):
-        await ctx.send("Tidying up your server")
-        await ctx.channel.purge(limit=purge_amount+2)
+    @command(name="ping")
+    @cooldown(1, 5, BucketType.user)
+    async def ping(self, ctx):
+        await ctx.send(f"Pong {round(self.bot.latency, 2)}ms")
 
     @command(name="covid", aliases=["covid19"])
+    @cooldown(1, 5, BucketType.user)
     async def covid(self, ctx, country=None):
 
         if country:
