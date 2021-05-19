@@ -99,7 +99,7 @@ class Fun(Cog):
     async def birthday(self, ctx, member: discord.Member):
         await ctx.send(f"Hey {member.mention}, Happy Birthday")
 
-    @command(@command(description="Sends you slapped 'mentioned member' for 'reason'"))
+    @command(description="Sends you slapped 'mentioned member' for 'reason'")
     @cooldown(1, 5, BucketType.user)
     async def slap(self, ctx, member: discord.Member, *, reason=None):
         bot_users_id = []
