@@ -2,7 +2,7 @@ import discord
 from discord import Embed, Colour, Status, Game, Activity, ActivityType
 from discord.ext import tasks
 from discord.ext.commands import Cog, command, BucketType, cooldown
-from discord.ext.commands.errors import CommandNotFound
+from discord.ext.commands.errors import CommandNotFound, CommandOnCooldown
 import random
 from aiohttp import request
 import datetime
@@ -45,6 +45,9 @@ class Fun(Cog):
         if isinstance(error, CommandNotFound):
             await ctx.send("Command not found.")
 
+        elif isinstance(error, CommandOnCooldown):
+            await ctx.send(f"Command is on cool down. Please retry after {round(error.retry_after)} seconds")
+
     @Cog.listener()
     async def on_member_join(self, member):
         channel = self.bot.get_channel(773736558259994624)
@@ -56,6 +59,11 @@ class Fun(Cog):
     async def on_member_remove(self, member):
         channel = self.bot.get_channel(773736558259994624)
         await channel.send(f"{member.mention} left the server!")
+
+    @command(description="Displays the version of the bot", aliases=["info"])
+    @cooldown(1, 5, BucketType.user)
+    async def version(self, ctx):
+        await ctx.send("I am PyBot 2.0")
 
     @command()
     @cooldown(1, 5, BucketType.user)
@@ -98,6 +106,108 @@ class Fun(Cog):
     async def invite(self, ctx):
         link = await ctx.channel.create_invite(max_age=300)
         await ctx.send(f"Here is an instant invite to this server:\n{link}")
+
+    @command(description="Duplicates your message")
+    @cooldown(1, 5, BucketType.user)
+    async def echo(self, ctx, *, message):
+        await ctx.send(message)
+
+    @command(description="Sends a meme")
+    @cooldown(1, 5, BucketType.user)
+    async def meme(self, ctx):
+        url = "https://meme-api.herokuapp.com/gimme"
+        async with request("GET", url) as response:
+            if response.status == 200:
+                data = await response.json()
+                embed = Embed(title=data["title"], colour=Colour(0x27E4FF))
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+    @command(description="Sends a joke")
+    @cooldown(1, 5, BucketType.user)
+    async def joke(self, ctx):
+        url = "https://sv443.net/jokeapi/v2/joke/Miscellaneous,Dark,Pun?blacklistFlags=nsfw,religious,political,racist,sexist&type=twopart"
+        async with request("GET", url) as response:
+            if response.status == 200:
+                data = await response.json()
+                embed = Embed(title=data["setup"], colour=Colour(0x27E4FF))
+                embed.add_field(name="\u200b", value=data["delivery"])
+                await ctx.send(embed=embed)
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+    @command(description="Wishes the member 'Happy Birthday'")
+    @cooldown(1, 5, BucketType.user)
+    async def bday(self, ctx, member: discord.Member):
+        await ctx.send(f"Hey {member.mention}, Happy Birthday")
+
+    @command(description="Sends 'member1' slapped 'member2' for 'reason'. (Reason isn't compulsory)")
+    @cooldown(1, 5, BucketType.user)
+    async def slap(self, ctx, member: discord.Member, *, reason=None):
+        bot_users_id = []
+
+        for bot_users in ctx.guild.members:
+            if bot_users.bot:
+                bot_users_id.append(bot_users.id)
+
+        if member.id in bot_users_id:
+            await ctx.send("Hey, you can't slap bots!")
+
+        elif reason is None:
+            await ctx.send(f"{ctx.author.display_name} slapped {member.mention}")
+
+        elif member.id == ctx.message.author.id:
+            await ctx.send("Really? I don't think its a good idea.")
+
+        else:
+            await ctx.send(f"{ctx.author.display_name} slapped {member.mention} for {reason}!")
+
+    @command(description="Sends a gif/png of Pikachu")
+    @cooldown(1, 5, BucketType.user)
+    async def pikachu(self, ctx):
+        url = "https://some-random-api.ml/img/pikachu"
+
+        async with request("GET", url) as response:
+            if response.status == 200:
+                data = await response.json()
+
+                if data["link"][-3:] == "gif":
+                    embed = Embed(title="Here's a gif of Pikachu",
+                                  colour=Colour(0x27E4FF))
+                    embed.set_image(url=data["link"])
+                    await ctx.send(embed=embed)
+
+                else:
+                    embed = Embed(
+                        title=f"Here's a picture of Pikachu", colour=Colour(0x27E4FF))
+                    embed.set_image(url=data["link"])
+                    await ctx.send(embed=embed)
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+    @command(description="Posts a picture of your Fortnite stats")
+    @cooldown(1, 5, BucketType.user)
+    async def fn(self, ctx, *, name):
+        url = "https://fortnite-api.com/v1/stats/br/v2"
+
+        async with request("GET", url, params={"name": name, "image": "all"}) as response:
+            if response.status == 200:
+                data = await response.json()
+                await ctx.send(data["data"]["image"])
+
+            elif response.status == 403:
+                await ctx.send("The given user's account stats is private.")
+
+            elif response.status == 404:
+                await ctx.send("User not found")
+
+            else:
+                print(url)
+                await ctx.send(f"API returned {response.status} status.")
 
     @command(name="server_info", aliases=["info", "server"])
     @cooldown(1, 5, BucketType.user)
