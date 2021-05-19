@@ -1,6 +1,7 @@
 import discord
 from discord.ext.commands import Bot
 import os
+from keep_alive import keep_alive
 
 intents = discord.Intents(messages=True, guilds=True,
                           reactions=True, members=True, presences=True)
@@ -19,4 +20,5 @@ async def on_ready():
     print("Bot is online")
     print(f"Logged in as: {bot.user}")
 
+keep_alive()
 bot.run(TOKEN)
