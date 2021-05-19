@@ -56,12 +56,6 @@ class Fun(Cog):
 
         await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
-    @command(aliases=['link'])
-    @cooldown(1, 5, BucketType.user)
-    async def invite(self, ctx):
-        link = await ctx.channel.create_invite(max_age=300)
-        await ctx.send(f"Here is an instant invite to this server:\n{link}")
-
     @command(description="Duplicates your message")
     @cooldown(1, 5, BucketType.user)
     async def echo(self, ctx, *, message):
@@ -164,37 +158,6 @@ class Fun(Cog):
                 print(url)
                 await ctx.send(f"API returned {response.status} status.")
 
-    @command(name="server_info", aliases=["info", "server"])
-    @cooldown(1, 5, BucketType.user)
-    async def server_info(self, ctx):
-        name = str(ctx.guild.name)
-        owner = str(ctx.guild.owner)
-        server_id = str(ctx.guild.id)
-        region = str(ctx.guild.region).capitalize()
-        icon = str(ctx.guild.icon_url)
-        member_count = str(ctx.guild.member_count)
-        bot_users = 0
-        for i in ctx.guild.members:
-            if i.bot:
-                bot_users += 1
-        text_channels = str(len(ctx.guild.text_channels))
-        voice_channels = str(len(ctx.guild.voice_channels))
-
-        embed = discord.Embed(
-            title=name + " Server Information", color=discord.Color.red())
-
-        embed.add_field(name="Owner", value=owner, inline=False)
-        embed.add_field(name="Server ID", value=server_id)
-        embed.add_field(name="Region", value=region, inline=False)
-        embed.add_field(name="Member Count", value=member_count)
-        embed.add_field(name="Bots", value=str(bot_users))
-        embed.add_field(name="Text Channels",
-                        value=text_channels, inline=False)
-        embed.add_field(name="Voice Channels", value=voice_channels)
-        embed.set_thumbnail(url=icon)
-
-        await ctx.send(embed=embed)
-
     @command(description="Posts Covid19 Stats")
     @cooldown(1, 5, BucketType.user)
     async def covid(self, ctx, country=None):
@@ -274,6 +237,7 @@ class Fun(Cog):
                 await ctx.send(f"You do not have the required permissions")
 
         else:
+            await member.edit(nick=nick)
             await ctx.send("Successfully removed nickname")
 
 

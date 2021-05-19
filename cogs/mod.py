@@ -4,10 +4,10 @@ from discord.ext.commands import Cog, command, has_role, has_permissions
 
 
 class Mod(Cog):
+
     @Cog.listener()
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, CommandNotFound):
-            await ctx.send("Command not found.")
+    async def on_ready(self):
+        print("Mod Cog Loaded")
 
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_role('Co-ordinators')
