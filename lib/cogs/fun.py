@@ -1,7 +1,7 @@
 from aiohttp import request
 from discord import Embed, Colour
-from discord.ext.commands.core import command
-from discord.ext.commands import Cog
+from discord.ext.commands import Cog, command
+import datetime
 
 
 class Fun(Cog):
@@ -11,6 +11,11 @@ class Fun(Cog):
     @Cog.listener()
     async def on_ready(self):
         self.bot.cogs_ready.ready_up("fun")
+
+    @command(name="clear", aliases=["purge"])
+    async def clear(self, ctx, purge_amount: int = 10):
+        await ctx.send("Tidying up your server")
+        await ctx.channel.purge(limit=purge_amount+2)
 
     @command(name="covid", aliases=["covid19"])
     async def covid(self, ctx, country=None):
@@ -23,7 +28,7 @@ class Fun(Cog):
                     data = await response.json()
 
                     embed = Embed(
-                        title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF))
+                        title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.datetime.utcnow())
                     embed.set_image(
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
 
@@ -37,6 +42,7 @@ class Fun(Cog):
                                     value="{:,}".format(data['cases']))
                     embed.add_field(name="Total Covid Deaths",
                                     value="{:,}".format(data['deaths']))
+                    embed.set_footer(text="Stay Safe Everybody ✌️")
 
             await ctx.send(embed=embed)
 
@@ -48,7 +54,7 @@ class Fun(Cog):
                     data = await response.json()
 
                     embed = Embed(
-                        title="Global Covid-19 Cases", colour=Colour(0x27E4FF))
+                        title="Global Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.datetime.utcnow())
                     embed.set_image(
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
 
@@ -66,6 +72,7 @@ class Fun(Cog):
                                     value="{:,}".format(data['active']))
                     embed.add_field(name="Total Recovered",
                                     value="{:,}".format(data['recovered']))
+                    embed.set_footer(text="Stay Safe Everybody ✌️")
 
             await ctx.send(embed=embed)
 
