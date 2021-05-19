@@ -1,8 +1,7 @@
 import discord
-from discord import Embed, Colour, Status, Game, Activity, ActivityType
-from discord.ext import tasks
+from discord import Embed, Colour
 from discord.ext.commands import Cog, command, BucketType, cooldown
-from discord.ext.commands.errors import CommandNotFound, CommandOnCooldown
+from discord.utils import get
 import random
 from aiohttp import request
 import datetime
@@ -14,68 +13,24 @@ class Fun(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        self.bot_status.start()
-        print("Bot is online")
-        print(f"Logged in as: {self.bot.user}")
-
-    @tasks.loop(seconds=60)
-    async def bot_status(self):
-        statuses = ["I'm Busy",
-                    "PYTHON BOT Server",
-                    "Compiling the code",
-                    "Fortnite",
-                    "!"]
-        status = random.choice(statuses)
-        if status in "I'm Busy":
-            await self.bot.change_presence(status=Status.dnd, activity=discord.Game(name=status))
-
-        elif status in ("PYTHON BOT Server", "Not_Thareesh's Stream"):
-            await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
-                                                             name=status))
-
-        elif status in "!":
-            await self.bot.change_presence(activity=Activity(type=ActivityType.listening,
-                                                             name=status))
-
-        else:
-            await self.bot.change_presence(activity=Game(name=status))
-
-    @Cog.listener()
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, CommandNotFound):
-            await ctx.send("Command not found.")
-
-        elif isinstance(error, CommandOnCooldown):
-            await ctx.send(f"Command is on cool down. Please retry after {round(error.retry_after)} seconds")
-
-    @Cog.listener()
-    async def on_member_join(self, member):
-        channel = self.bot.get_channel(773736558259994624)
-        await channel.send(f"Welcome {member.mention}! Hope you have a great time in this server!")
-        role = discord.utils.get(member.guild.roles, name="Testers")
-        await member.add_roles(role)
-
-    @Cog.listener()
-    async def on_member_remove(self, member):
-        channel = self.bot.get_channel(773736558259994624)
-        await channel.send(f"{member.mention} left the server!")
+        print("Fun Cog Loaded")
 
     @command(description="Displays the version of the bot")
     @cooldown(1, 5, BucketType.user)
     async def version(self, ctx):
         await ctx.send("I am PyBot 2.0")
 
-    @command()
+    @command(description="Sends bot latency")
     @cooldown(1, 5, BucketType.user)
     async def ping(self, ctx):
         await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
 
-    @command(aliases=['lachy'])
+    @command(description="Sends Poggies!", aliases=['lachy'])
     @cooldown(1, 5, BucketType.user)
     async def pog(self, ctx):
         await ctx.send("POGGIES!")
 
-    @command(aliases=['8ball'])
+    @command(name="8ball", description="Random message from a 8-Ball")
     @cooldown(1, 5, BucketType.user)
     async def _8ball(self, ctx, *, question):
         responses = ["It is certain.",
@@ -139,12 +94,12 @@ class Fun(Cog):
             else:
                 await ctx.send(f"API returned a {response.status} status.")
 
-    @command(description="Wishes the member 'Happy Birthday'")
+    @command(description="Wishes the member 'Happy Birthday'", aliases=["bday", "hbd"])
     @cooldown(1, 5, BucketType.user)
-    async def bday(self, ctx, member: discord.Member):
+    async def birthday(self, ctx, member: discord.Member):
         await ctx.send(f"Hey {member.mention}, Happy Birthday")
 
-    @command(description="Sends 'member1' slapped 'member2' for 'reason'. (Reason isn't compulsory)")
+    @command(@command(description="Sends you slapped 'mentioned member' for 'reason'"))
     @cooldown(1, 5, BucketType.user)
     async def slap(self, ctx, member: discord.Member, *, reason=None):
         bot_users_id = []
@@ -240,12 +195,12 @@ class Fun(Cog):
 
         await ctx.send(embed=embed)
 
-    @command(name="covid", aliases=["covid19"])
+    @command(description="Posts Covid19 Stats")
     @cooldown(1, 5, BucketType.user)
     async def covid(self, ctx, country=None):
 
         if country:
-            url = f"https://corona.lmao.ninja/v2/countries/{country}?yesterday&strict&query"
+            url = f"https://corona.lmao.ninja/v2/countries/{country}?yesterday=true&strict=true&query="
 
             async with request("GET", url) as response:
                 if response.status == 200:
@@ -259,9 +214,9 @@ class Fun(Cog):
                     embed.add_field(name="Total Population", value="{:,}".format(
                         data['population']))
                     embed.add_field(name="Today Covid Cases",
-                                    value="{:,}".format(data['todayCases']))
+                                    value=f"{data['todayCases']:,}")
                     embed.add_field(name="Today Covid Deaths",
-                                    value="{:,}".format(data['todayDeaths']))
+                                    value=f"{data['todayDeaths']:,}")
                     embed.add_field(name="Total Covid Cases",
                                     value="{:,}".format(data['cases']))
                     embed.add_field(name="Total Covid Deaths",
@@ -286,9 +241,9 @@ class Fun(Cog):
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
 
                     embed.add_field(name="Today Covid Cases",
-                                    value="{:,}".format(data['todayCases']))
+                                    value=f"{data['todayCases']:,}")
                     embed.add_field(name="Today Covid Deaths",
-                                    value="{:,}".format(data['todayDeaths']))
+                                    value=f"{data['todayDeaths']:,}")
                     embed.add_field(
                         name="\u200b", value="\u200b")
                     embed.add_field(name="Total Covid Cases",
@@ -304,6 +259,22 @@ class Fun(Cog):
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send(f"API responded with {response.status} status")
+
+    @command(description="Changes Nickname of Member", aliases=["nick"])
+    @cooldown(1, 5, BucketType.user)
+    async def nickname(self, ctx, member: discord.Member, *, nick=None):
+        role = get(ctx.guild.roles, name="Co-ordinators")
+
+        if nick:
+            if ctx.author.guild_permissions.administrator or role in ctx.author.roles or member == ctx.author:
+                await member.edit(nick=nick)
+                await ctx.send(f"Nickname has been successfully changed to **{nick}**")
+
+            else:
+                await ctx.send(f"You do not have the required permissions")
+
+        else:
+            await ctx.send("Successfully removed nickname")
 
 
 def setup(bot):

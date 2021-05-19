@@ -9,9 +9,9 @@ class Mod(Cog):
         if isinstance(error, CommandNotFound):
             await ctx.send("Command not found.")
 
-    @command()
+    @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_role('Co-ordinators')
-    async def clear(self, ctx, amount: int):
+    async def clear(self, ctx, amount: int = 10):
         await ctx.send(f"Tidying up your server")
         await ctx.channel.purge(limit=amount+2)
 
@@ -29,12 +29,13 @@ class Mod(Cog):
         else:
             await ctx.send(f"{member.mention} was kicked!")
 
-    @command()
+    @command(description="Bans Members from the server")
     @has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         await member.ban(reason=reason)
+        await ctx.send(f"{member} was **banned**")
 
-    @command()
+    @command(description="Unbans Members from the server")
     async def unban(self, ctx, *, member):
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split('#')
