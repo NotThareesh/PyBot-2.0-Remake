@@ -13,7 +13,7 @@ class Discord(Cog):
         print("Server Cog Loaded")
         self.bot_status.start()
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(minutes=5)
     async def bot_status(self):
         statuses = ["I'm Busy",
                     "PYTHON BOT Server",
