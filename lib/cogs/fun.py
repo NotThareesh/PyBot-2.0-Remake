@@ -12,6 +12,10 @@ class Fun(Cog):
     async def on_ready(self):
         self.bot.cogs_ready.ready_up("fun")
 
+    @command(name="ping")
+    async def ping(self, ctx):
+        await ctx.send(f"Pong {round(self.bot.latency*1000)}ms")
+
     @command(name="clear", aliases=["purge"])
     async def clear(self, ctx, purge_amount: int = 10):
         await ctx.send("Tidying up your server")
