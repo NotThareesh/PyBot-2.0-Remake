@@ -60,7 +60,7 @@ class Fun(Cog):
         channel = self.bot.get_channel(773736558259994624)
         await channel.send(f"{member.mention} left the server!")
 
-    @command(description="Displays the version of the bot", aliases=["info"])
+    @command(description="Displays the version of the bot")
     @cooldown(1, 5, BucketType.user)
     async def version(self, ctx):
         await ctx.send("I am PyBot 2.0")
