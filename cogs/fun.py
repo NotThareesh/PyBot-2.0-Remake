@@ -158,7 +158,7 @@ class Fun(Cog):
                 print(url)
                 await ctx.send(f"API returned {response.status} status.")
 
-    @command(description="Posts Covid19 Stats")
+    @command(description="Posts Covid19 Stats", aliases=["covid19"])
     @cooldown(1, 5, BucketType.user)
     async def covid(self, ctx, country=None):
 
