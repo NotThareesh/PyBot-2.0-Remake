@@ -177,9 +177,9 @@ class Fun(Cog):
                     embed.add_field(name="Total Population", value="{:,}".format(
                         data['population']))
                     embed.add_field(
-                        name="Today Covid Cases", value="None/Not Updated" if data['todayCases'] == 0 else f"{data['todayCases']: , }")
+                        name="Today Covid Cases", value="None/Not Updated" if data['todayCases'] == 0 else f"{data['todayCases']:,}")
                     embed.add_field(
-                        name="Today Covid Cases", value="None/Not Updated" if data['todayDeaths'] == 0 else f"{data['todayDeaths']: , }")
+                        name="Today Covid Deaths", value="None/Not Updated" if data['todayDeaths'] == 0 else f"{data['todayDeaths']:,}")
                     embed.add_field(name="Total Covid Cases",
                                     value=f"{data['cases']:,}")
                     embed.add_field(name="Total Covid Deaths",
