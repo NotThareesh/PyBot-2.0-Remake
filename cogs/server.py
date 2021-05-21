@@ -13,25 +13,28 @@ class Discord(Cog):
         print("Server Cog Loaded")
         self.bot_status.start()
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(seconds=10)
     async def bot_status(self):
         statuses = ["I'm Busy",
-                    "PYTHON BOT Server",
+                    f"{len(self.bot.guilds)} Server" if len(
+                        self.bot.guilds) <= 1 else "{len(self.bot.guild)} Servers",
                     "Compiling the code",
                     "Fortnite",
-                    "!"]
+                    "!", ]
         status = random.choice(statuses)
+
         if status in "I'm Busy":
             await self.bot.change_presence(status=Status.dnd, activity=Game(name=status))
 
-        elif status in ("PYTHON BOT Server", "Not_Thareesh's Stream"):
-            await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
-                                                             name=status))
+        elif status in ("Fortnite", "Compiling the code"):
+            await self.bot.change_presence(activity=Game(name=status))
+
         elif status in "!":
             await self.bot.change_presence(activity=Activity(type=ActivityType.listening,
                                                              name=status))
         else:
-            await self.bot.change_presence(activity=Game(name=status))
+            await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
+                                                             name=status))
 
     @command(description="Sends a server invitation", aliases=['link'])
     @cooldown(1, 5, BucketType.user)

@@ -173,17 +173,25 @@ class Fun(Cog):
                         title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
                     embed.set_image(
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
-
+                    embed.set_thumbnail(url=f"{data['countryInfo']['flag']}")
                     embed.add_field(name="Total Population", value="{:,}".format(
                         data['population']))
+                    embed.add_field(
+                        name="\u200b", value="\u200b")
+                    embed.add_field(
+                        name="\u200b", value="\u200b")
                     embed.add_field(
                         name="Today Covid Cases", value="None/Not Updated" if data['todayCases'] == 0 else f"{data['todayCases']:,}")
                     embed.add_field(
                         name="Today Covid Deaths", value="None/Not Updated" if data['todayDeaths'] == 0 else f"{data['todayDeaths']:,}")
+                    embed.add_field(
+                        name="\u200b", value="\u200b")
                     embed.add_field(name="Total Covid Cases",
                                     value=f"{data['cases']:,}")
                     embed.add_field(name="Total Covid Deaths",
                                     value=f"{data['deaths']:,}")
+                    embed.add_field(name="Total Recovered",
+                                    value=f"{data['recovered']}")
                     embed.set_footer(
                         text="Stay Safe Everybody ✌️")
 
