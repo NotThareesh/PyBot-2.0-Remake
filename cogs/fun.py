@@ -4,7 +4,7 @@ from discord.ext.commands import Cog, command, BucketType, cooldown
 from discord.utils import get
 import random
 from aiohttp import request
-import datetime
+from datetime import datetime
 
 
 class Fun(Cog):
@@ -163,28 +163,29 @@ class Fun(Cog):
     async def covid(self, ctx, country=None):
 
         if country:
-            url = f"https://corona.lmao.ninja/v2/countries/{country}?yesterday=true&strict=true&query="
+            url = f"https://corona.lmao.ninja/v2/countries/{country}?strict=true"
 
             async with request("GET", url) as response:
                 if response.status == 200:
                     data = await response.json()
 
                     embed = Embed(
-                        title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.datetime.utcnow())
+                        title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
                     embed.set_image(
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
 
                     embed.add_field(name="Total Population", value="{:,}".format(
                         data['population']))
-                    embed.add_field(name="Today Covid Cases",
-                                    value=f"{data['todayCases']:,}")
-                    embed.add_field(name="Today Covid Deaths",
-                                    value=f"{data['todayDeaths']:,}")
+                    embed.add_field(
+                        name="Today Covid Cases", value="None/Not Updated" if data['todayCases'] == 0 else f"{data['todayCases']: , }")
+                    embed.add_field(
+                        name="Today Covid Cases", value="None/Not Updated" if data['todayDeaths'] == 0 else f"{data['todayDeaths']: , }")
                     embed.add_field(name="Total Covid Cases",
-                                    value="{:,}".format(data['cases']))
+                                    value=f"{data['cases']:,}")
                     embed.add_field(name="Total Covid Deaths",
-                                    value="{:,}".format(data['deaths']))
-                    embed.set_footer(text="Stay Safe Everybody ✌️")
+                                    value=f"{data['deaths']:,}")
+                    embed.set_footer(
+                        text="Stay Safe Everybody ✌️")
 
                     await ctx.send(embed=embed)
 
@@ -192,14 +193,14 @@ class Fun(Cog):
                     await ctx.send(f"API responded with {response.status} status")
 
         else:
-            url = "https://corona.lmao.ninja/v2/all?yesterday"
+            url = "https://corona.lmao.ninja/v2/all"
 
             async with request("GET", url) as response:
                 if response.status == 200:
                     data = await response.json()
 
                     embed = Embed(
-                        title="Global Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.datetime.utcnow())
+                        title="Global Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
                     embed.set_image(
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
 
@@ -210,21 +211,22 @@ class Fun(Cog):
                     embed.add_field(
                         name="\u200b", value="\u200b")
                     embed.add_field(name="Total Covid Cases",
-                                    value="{:,}".format(data['cases']))
+                                    value=f"{data['cases']:,}")
                     embed.add_field(name="Total Covid Deaths",
-                                    value="{:,}".format(data['deaths']))
+                                    value=f"{data['deaths']:,}")
                     embed.add_field(name="Total Active Cases",
-                                    value="{:,}".format(data['active']))
+                                    value=f"{data['active']:,}")
                     embed.add_field(name="Total Recovered",
-                                    value="{:,}".format(data['recovered']))
-                    embed.set_footer(text="Stay Safe Everybody ✌️")
+                                    value=f"{data['recovered']:,}")
+                    embed.set_footer(
+                        text=f"Stay Safe Everybody ✌️")
 
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send(f"API responded with {response.status} status")
 
-    @command(description="Changes Nickname of Member", aliases=["nick"])
-    @cooldown(1, 5, BucketType.user)
+    @ command(description="Changes Nickname of Member", aliases=["nick"])
+    @ cooldown(1, 5, BucketType.user)
     async def nickname(self, ctx, member: discord.Member, *, nick=None):
         role = get(ctx.guild.roles, name="Co-ordinators")
 
