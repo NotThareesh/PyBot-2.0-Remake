@@ -20,17 +20,17 @@ class Fun(Cog):
     async def version(self, ctx):
         await ctx.send("I am PyBot 2.0")
 
-    @command(description="Sends bot latency")
+    @command(description="Returns bot latency")
     @cooldown(1, 5, BucketType.user)
     async def ping(self, ctx):
         await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
 
-    @command(description="Sends Poggies!", aliases=['lachy'])
+    @command(description="Returns Poggies!", aliases=['lachy'])
     @cooldown(1, 5, BucketType.user)
     async def pog(self, ctx):
         await ctx.send("POGGIES!")
 
-    @command(name="8ball", description="Random message from a 8-Ball")
+    @command(name="8ball", description="Returns a random message from a 8-Ball")
     @cooldown(1, 5, BucketType.user)
     async def _8ball(self, ctx, *, question):
         responses = ["It is certain.",
@@ -61,7 +61,7 @@ class Fun(Cog):
     async def echo(self, ctx, *, message):
         await ctx.send(message)
 
-    @command(description="Sends a meme")
+    @command(description="Returns a meme")
     @cooldown(1, 5, BucketType.user)
     async def meme(self, ctx):
         url = "https://meme-api.herokuapp.com/gimme"
@@ -74,7 +74,7 @@ class Fun(Cog):
             else:
                 await ctx.send(f"API returned a {response.status} status.")
 
-    @command(description="Sends a joke")
+    @command(description="Returns a joke")
     @cooldown(1, 5, BucketType.user)
     async def joke(self, ctx):
         url = "https://sv443.net/jokeapi/v2/joke/Miscellaneous,Dark,Pun?blacklistFlags=nsfw,religious,political,racist,sexist&type=twopart"
@@ -93,7 +93,7 @@ class Fun(Cog):
     async def birthday(self, ctx, member: discord.Member):
         await ctx.send(f"Hey {member.mention}, Happy Birthday")
 
-    @command(description="Sends you slapped 'mentioned member' for 'reason'")
+    @command(description="Returns that you slapped 'mentioned member' for 'reason'")
     @cooldown(1, 5, BucketType.user)
     async def slap(self, ctx, member: discord.Member, *, reason=None):
         bot_users_id = []
@@ -114,7 +114,7 @@ class Fun(Cog):
         else:
             await ctx.send(f"{ctx.author.display_name} slapped {member.mention} for {reason}!")
 
-    @command(description="Sends a gif/png of Pikachu")
+    @command(description="Posts a gif/png of Pikachu")
     @cooldown(1, 5, BucketType.user)
     async def pikachu(self, ctx):
         url = "https://some-random-api.ml/img/pikachu"
@@ -233,8 +233,8 @@ class Fun(Cog):
                 else:
                     await ctx.send(f"API responded with {response.status} status")
 
-    @ command(description="Changes Nickname of Member", aliases=["nick"])
-    @ cooldown(1, 5, BucketType.user)
+    @command(description="Changes Nickname of Member", aliases=["nick"])
+    @cooldown(1, 5, BucketType.user)
     async def nickname(self, ctx, member: discord.Member, *, nick=None):
         role = get(ctx.guild.roles, name="Co-ordinators")
 

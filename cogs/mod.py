@@ -12,8 +12,13 @@ class Mod(Cog):
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_role('Co-ordinators')
     async def clear(self, ctx, amount: int = 10):
-        await ctx.send(f"Tidying up your server")
-        await ctx.channel.purge(limit=amount+2)
+        if amount <= 0:
+            await ctx.send("Please provide a valid number")
+        elif amount > 100:
+            await ctx.send("Please provide a smaller number")
+        else:
+            await ctx.send(f"Tidying up your server")
+            await ctx.channel.purge(limit=amount+2)
 
     @clear.error
     async def clear_error(self, ctx, error):
