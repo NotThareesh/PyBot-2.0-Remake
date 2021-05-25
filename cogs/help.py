@@ -10,11 +10,14 @@ def syntax(command):
 
     for key, value in command.params.items():
         if key not in ("self", "ctx"):
-            params.append(f"[{key}]")
+            params.append(f"[{key}]" if "NoneType" in str(
+                value) else f"<{key}>")
 
-    params = " ".join(params)
-
-    return f"`{cmd_and_aliases} {params}`"
+    if len(params) == 0:
+        return f"`{cmd_and_aliases}`"
+    else:
+        params = " ".join(params)
+        return f"`{cmd_and_aliases} {params}`"
 
 
 class Help(Cog):
