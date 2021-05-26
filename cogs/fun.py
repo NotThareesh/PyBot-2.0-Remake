@@ -191,7 +191,7 @@ class Fun(Cog):
                     embed.add_field(name="Total Covid Deaths",
                                     value=f"{data['deaths']:,}")
                     embed.add_field(name="Total Recovered",
-                                    value=f"{data['recovered']}")
+                                    value=f"{data['recovered']:,}")
                     embed.set_footer(
                         text="Stay Safe Everybody ✌️")
 
@@ -222,8 +222,6 @@ class Fun(Cog):
                                     value=f"{data['cases']:,}")
                     embed.add_field(name="Total Covid Deaths",
                                     value=f"{data['deaths']:,}")
-                    embed.add_field(name="Total Active Cases",
-                                    value=f"{data['active']:,}")
                     embed.add_field(name="Total Recovered",
                                     value=f"{data['recovered']:,}")
                     embed.set_footer(
