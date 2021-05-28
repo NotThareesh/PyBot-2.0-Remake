@@ -5,6 +5,7 @@ from discord.utils import get
 import random
 from aiohttp import request
 from datetime import datetime
+from typing import Optional
 
 
 class Fun(Cog):
@@ -58,7 +59,7 @@ class Fun(Cog):
 
     @command(description="Duplicates your message")
     @cooldown(1, 5, BucketType.user)
-    async def echo(self, ctx, *, message):
+    async def echo(self, ctx, *, message: Optional[str]):
         await ctx.send(message)
 
     @command(description="Returns a meme")
@@ -95,7 +96,7 @@ class Fun(Cog):
 
     @command(description="Returns that you slapped 'mentioned member' for 'reason'")
     @cooldown(1, 5, BucketType.user)
-    async def slap(self, ctx, member: discord.Member, *, reason=None):
+    async def slap(self, ctx, member: discord.Member, *, reason: Optional[str]):
         bot_users_id = []
 
         for bot_users in ctx.guild.members:
@@ -140,7 +141,7 @@ class Fun(Cog):
 
     @command(description="Posts a picture of your Fortnite stats")
     @cooldown(1, 5, BucketType.user)
-    async def fn(self, ctx, *, name):
+    async def fn(self, ctx, *, name: str):
         url = "https://fortnite-api.com/v1/stats/br/v2"
 
         async with request("GET", url, params={"name": name, "image": "all"}) as response:
@@ -160,7 +161,7 @@ class Fun(Cog):
 
     @command(description="Posts Covid19 Stats", aliases=["covid19"])
     @cooldown(1, 5, BucketType.user)
-    async def covid(self, ctx, country=None):
+    async def covid(self, ctx, country: str = None):
 
         if country:
             url = f"https://corona.lmao.ninja/v2/countries/{country}?strict=true"
@@ -170,7 +171,7 @@ class Fun(Cog):
                     data = await response.json()
 
                     embed = Embed(
-                        title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
+                        title=f"{country.capitalize()} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
                     embed.set_image(
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
                     embed.set_thumbnail(url=f"{data['countryInfo']['flag']}")
@@ -233,7 +234,7 @@ class Fun(Cog):
 
     @command(description="Changes Nickname of Member", aliases=["nick"])
     @cooldown(1, 5, BucketType.user)
-    async def nickname(self, ctx, member: discord.Member, *, nick=None):
+    async def nickname(self, ctx, member: discord.Member, *, nick: Optional[str]):
         role = get(ctx.guild.roles, name="Co-ordinators")
 
         if nick:

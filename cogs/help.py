@@ -1,6 +1,7 @@
 from discord import Embed, Colour
 from discord.ext.commands import Cog, command
 from discord.utils import get
+from discord.ext.menus import MenuPages, ListPageSource
 from typing import Optional
 
 
@@ -10,14 +11,12 @@ def syntax(command):
 
     for key, value in command.params.items():
         if key not in ("self", "ctx"):
-            params.append(f"[{key}]" if "NoneType" in str(
+            params.append(f"[{key}]" if "Optional" in str(
                 value) else f"<{key}>")
 
-    if len(params) == 0:
-        return f"`{cmd_and_aliases}`"
-    else:
-        params = " ".join(params)
-        return f"`{cmd_and_aliases} {params}`"
+    params = " ".join(params)
+
+    return f"`{cmd_and_aliases} {params}`"
 
 
 class Help(Cog):
@@ -32,11 +31,14 @@ class Help(Cog):
         embed = Embed(title=f"Help with `{command}`",
                       description=syntax(command),
                       colour=Colour(0x27E4FF))
-        embed.add_field(name="Command description", value=command.description)
+
+        embed.add_field(name="Command description",
+                        value=command.description if command.description else command.help)
+
         await ctx.send(embed=embed)
 
-    @command(name="help")
-    async def show_help(self, ctx, cmd: Optional[str]):
+    @command(name="help", description="Returns a help dialog of all the commands")
+    async def help(self, ctx, cmd: Optional[str]):
         if cmd is None:
             pass
 
