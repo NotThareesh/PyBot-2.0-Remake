@@ -10,7 +10,7 @@ class Mod(Cog):
         print("Mod Cog Loaded")
 
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
-    @has_role('Co-ordinators')
+    @has_permissions(administrator=True, manage_channels=True)
     async def clear(self, ctx, amount: int = 10):
         if amount <= 0:
             await ctx.send("Please provide a valid number")
