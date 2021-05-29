@@ -1,13 +1,28 @@
 import discord
-from discord.ext.commands.errors import CommandNotFound, MissingRequiredArgument
-from discord.ext.commands import Cog, command, has_role, has_permissions
+from discord.ext.commands.errors import MissingRequiredArgument
+from discord.ext.commands import Cog, command, has_permissions
+from better_profanity import profanity
 
 
 class Mod(Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+        with open("./words/whitelisted_words.txt", "r") as white_words_file:
+            white_words_list = []
+            for x in white_words_file.readlines():
+                white_words_list.append(x.strip("\n"))
+
+        profanity.load_censor_words(whitelist_words=white_words_list)
 
     @Cog.listener()
     async def on_ready(self):
         print("Mod Cog Loaded")
+
+    @Cog.listener()
+    async def on_message(self, message):
+        if profanity.contains_profanity(message.content):
+            await message.delete()
 
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_permissions(administrator=True, manage_channels=True)
