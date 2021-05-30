@@ -20,7 +20,8 @@ class Discord(Cog):
                         self.bot.guilds) <= 1 else f"{len(self.bot.guilds)} Servers",
                     "Compiling the code",
                     "Fortnite",
-                    "!", ]
+                    "!help", ]
+
         status = random.choice(statuses)
 
         if status in "I'm Busy":

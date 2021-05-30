@@ -235,10 +235,8 @@ class Fun(Cog):
     @command(description="Changes Nickname of Member", aliases=["nick"])
     @cooldown(1, 5, BucketType.user)
     async def nickname(self, ctx, member: discord.Member, *, nick: Optional[str]):
-        role = get(ctx.guild.roles, name="Co-ordinators")
-
         if nick:
-            if ctx.author.guild_permissions.administrator or role in ctx.author.roles or member == ctx.author:
+            if ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_guild or member == ctx.author:
                 await member.edit(nick=nick)
                 await ctx.send(f"Nickname has been successfully changed to **{nick}**")
 
@@ -246,8 +244,12 @@ class Fun(Cog):
                 await ctx.send(f"You do not have the required permissions")
 
         else:
-            await member.edit(nick=nick)
-            await ctx.send("Successfully removed nickname")
+            if ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_guild or member == ctx.author:
+                await member.edit(nick=nick)
+                await ctx.send("Successfully removed nickname")
+
+            else:
+                pass
 
 
 def setup(bot):
