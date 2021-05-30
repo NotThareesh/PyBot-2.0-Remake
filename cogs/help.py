@@ -1,3 +1,4 @@
+from operator import le
 from discord import Embed, Colour
 from discord.ext.commands import Cog, command
 from discord.utils import get
@@ -14,9 +15,45 @@ def syntax(command):
             params.append(f"[{key}]" if "Optional" in str(
                 value) else f"<{key}>")
 
-    params = " ".join(params)
+    if len(params) != 0:
+        params = " ".join(params)
+    else:
+        return f"`{cmd_and_aliases}`"
 
     return f"`{cmd_and_aliases} {params}`"
+
+
+class HelpMenu(ListPageSource):
+    def __init__(self, ctx, data):
+        self.ctx = ctx
+
+        super().__init__(data, per_page=6)
+
+    async def write_page(self, menu, fields=[]):
+        offset = (menu.current_page*self.per_page) + 1
+        len_data = len(self.entries)
+
+        embed = Embed(title="Help",
+                      description="Welcome to the help dialog!",
+                      colour=Colour(0x27E4FF))
+
+        embed.set_thumbnail(url=self.ctx.guild.me.avatar_url)
+        embed.set_footer(
+            text=f"{offset:,} - {min(len_data, offset+self.per_page-1):,} of {len_data:,} commands.")
+
+        for name, value in fields:
+            embed.add_field(name=name, value=value, inline=False)
+
+        return embed
+
+    async def format_page(self, menu, entries):
+        fields = []
+
+        for entry in entries:
+            fields.append(
+                (entry.description or "No description", syntax(entry)))
+
+        return await self.write_page(menu, fields)
 
 
 class Help(Cog):
@@ -40,7 +77,9 @@ class Help(Cog):
     @command(name="help", description="Returns a help dialog of all the commands")
     async def help(self, ctx, cmd: Optional[str]):
         if cmd is None:
-            pass
+            menu = MenuPages(source=HelpMenu(ctx, list(self.bot.commands)))
+
+            await menu.start(ctx)
 
         else:
             if (command := get(self.bot.commands, name=cmd)):

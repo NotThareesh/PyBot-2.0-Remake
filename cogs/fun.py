@@ -161,7 +161,7 @@ class Fun(Cog):
 
     @command(description="Posts Covid19 Stats", aliases=["covid19"])
     @cooldown(1, 5, BucketType.user)
-    async def covid(self, ctx, country: str = None):
+    async def covid(self, ctx, country: Optional[str]):
 
         if country:
             url = f"https://corona.lmao.ninja/v2/countries/{country}?strict=true"

@@ -40,7 +40,7 @@ class Mod(Cog):
         if isinstance(error, MissingRequiredArgument):
             await ctx.send("Please specify the amount of messages to delete.")
 
-    @command()
+    @command(description="Kicks members out of the server")
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         await member.kick(reason=reason)
