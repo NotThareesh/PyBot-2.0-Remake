@@ -4,11 +4,20 @@ from keep_alive import keep_alive
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 import os
+import json
+
+
+async def get_prefix(bot, message):
+    with open('./prefixes.json', mode="r") as file:
+        prefixes = json.load(file)
+
+    return prefixes[str(message.guild.id)]
+
 
 intents = discord.Intents(messages=True, guilds=True,
                           reactions=True, members=True, presences=True)
 
-bot = Bot(command_prefix="!", intents=intents, help_command=None)
+bot = Bot(command_prefix=get_prefix, intents=intents, help_command=None)
 
 TOKEN = 'Nzc3NzM2Mjg2MzQ1NzU2NzQz.X7HxXA.RBsDDLiw3-_W7ft0hK_rl2N3Yhg'
 

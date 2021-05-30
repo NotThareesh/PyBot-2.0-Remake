@@ -2,6 +2,7 @@ import discord
 from discord.ext.commands.errors import MissingRequiredArgument
 from discord.ext.commands import Cog, command, has_permissions
 from better_profanity import profanity
+import json
 
 
 class Mod(Cog):
@@ -21,8 +22,11 @@ class Mod(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        if profanity.contains_profanity(message.content):
-            await message.delete()
+        if message.author == self.bot.user:
+            pass
+        else:
+            if profanity.contains_profanity(message.content):
+                await message.delete()
 
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_permissions(administrator=True, manage_channels=True)
@@ -56,6 +60,7 @@ class Mod(Cog):
         await ctx.send(f"{member} was **banned**")
 
     @command(description="Unbans Members from the server")
+    @has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split('#')
@@ -68,6 +73,23 @@ class Mod(Cog):
                 await ctx.send(f"{member.mention} was unbanned")
 
                 return
+
+    @command(description="Changes Bot Prefix", aliases=["changeprefix"])
+    @has_permissions(manage_guild=True)
+    async def chprefix(self, ctx, prefix: str = "!"):
+        if len(prefix) > 5:
+            await ctx.send("Prefix cannot be more than 5 characters.")
+
+        else:
+            with open("prefixes.json", mode="r") as file:
+                prefixes = json.load(file)
+
+            prefixes[str(ctx.guild.id)] = prefix
+
+            with open("prefixes.json", mode="w") as file:
+                json.dump(prefixes, file, indent=4)
+
+            await ctx.send(f"Prefix changed to **{prefix}**")
 
 
 def setup(bot):

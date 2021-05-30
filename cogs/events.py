@@ -1,6 +1,7 @@
 from discord.ext.commands import Cog
 from discord.ext.commands.errors import CommandNotFound, CommandOnCooldown, MissingPermissions
 from discord.utils import get
+import json
 
 
 class Events(Cog):
@@ -34,6 +35,26 @@ class Events(Cog):
     async def on_member_remove(self, member):
         channel = self.bot.get_channel(773736558259994624)
         await channel.send(f"{member.mention} left the server!")
+
+    @Cog.listener()
+    async def on_guild_join(self, guild):
+        with open("prefixes.json", mode="r") as file:
+            prefixes = json.load(file)
+
+        prefixes[str(guild.id)] = "!"
+
+        with open("prefixes.json", mode="w") as file:
+            json.dump(prefixes, file, indent=4)
+
+    @Cog.listener()
+    async def on_guild_remove(self, guild):
+        with open("prefixes.json", mode="r") as file:
+            prefixes = json.load(file)
+
+        prefixes.pop(str(guild.id))
+
+        with open("prefixes.json", mode="w") as file:
+            json.dump(prefixes, file, indent=4)
 
 
 def setup(bot):

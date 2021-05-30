@@ -1,6 +1,8 @@
 from operator import le
 from discord import Embed, Colour
 from discord.ext.commands import Cog, command
+from discord.ext.commands.cooldowns import BucketType
+from discord.ext.commands.core import cooldown
 from discord.utils import get
 from discord.ext.menus import MenuPages, ListPageSource
 from typing import Optional
@@ -75,6 +77,7 @@ class Help(Cog):
         await ctx.send(embed=embed)
 
     @command(name="help", description="Returns a help dialog of all the commands")
+    @cooldown(1, 5, BucketType.user)
     async def help(self, ctx, cmd: Optional[str]):
         if cmd is None:
             menu = MenuPages(source=HelpMenu(ctx, list(self.bot.commands)))
