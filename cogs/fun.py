@@ -5,7 +5,6 @@ import random
 from aiohttp import request
 from datetime import datetime
 from typing import Optional
-import json
 
 
 class Fun(Cog):

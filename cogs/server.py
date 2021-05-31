@@ -24,7 +24,7 @@ class Discord(Cog):
                         self.bot.guilds) <= 1 else f"{len(self.bot.guilds)} Servers",
                     "Compiling the code",
                     "Fortnite",
-                    "!help", ]
+                    "help", ]
 
         status = random.choice(statuses)
 
@@ -34,7 +34,7 @@ class Discord(Cog):
         elif status in ("Fortnite", "Compiling the code"):
             await self.bot.change_presence(activity=Game(name=status))
 
-        elif status in "!":
+        elif status in "help":
             await self.bot.change_presence(activity=Activity(type=ActivityType.listening,
                                                              name=status))
         else:
@@ -73,8 +73,8 @@ class Discord(Cog):
         embed.add_field(name="Region", value=region, inline=False)
         embed.add_field(name="Member Count", value=member_count)
         embed.add_field(name="Bots", value=str(bot_users))
-        embed.add_field(name="Text Channels",
-                        value=text_channels, inline=False)
+        embed.add_field(name="\u200b", value="\u200b")
+        embed.add_field(name="Text Channels", value=text_channels)
         embed.add_field(name="Voice Channels", value=voice_channels)
 
         embed.set_thumbnail(url=icon)

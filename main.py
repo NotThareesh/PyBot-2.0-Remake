@@ -1,5 +1,5 @@
 import discord
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, when_mentioned_or
 from keep_alive import keep_alive
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -11,7 +11,8 @@ async def get_prefix(bot, message):
     with open('./prefixes.json', mode="r") as file:
         prefixes = json.load(file)
 
-    return prefixes[str(message.guild.id)]
+    prefix = prefixes[str(message.guild.id)]
+    return when_mentioned_or(prefix)(bot, message)
 
 
 intents = discord.Intents(messages=True, guilds=True,

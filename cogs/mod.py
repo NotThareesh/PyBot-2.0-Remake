@@ -1,4 +1,3 @@
-from aiohttp import client
 import discord
 from discord.ext.commands.errors import MissingRequiredArgument
 from discord.ext.commands import Cog, command, has_permissions
@@ -30,7 +29,7 @@ class Mod(Cog):
     async def on_message(self, message):
         if profanity.contains_profanity(message.content):
             await message.delete()
-        if self.bot.user.mentioned_in(message):
+        if message.content == f"<@!{self.bot.user.id}>":
             with open("prefixes.json", mode="r") as file:
                 prefixes = json.load(file)
 

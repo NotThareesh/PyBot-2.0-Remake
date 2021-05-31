@@ -1,4 +1,3 @@
-from operator import le
 from discord import Embed, Colour
 from discord.ext.commands import Cog, command
 from discord.ext.commands.cooldowns import BucketType
