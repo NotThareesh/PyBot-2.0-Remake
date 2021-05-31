@@ -13,6 +13,10 @@ class Discord(Cog):
         print("Server Cog Loaded")
         self.bot_status.start()
 
+    async def cog_before_invoke(self, ctx):
+        if ctx.author.guild_permissions.manage_messages:
+            return ctx.command.reset_cooldown(ctx)
+
     @tasks.loop(minutes=5)
     async def bot_status(self):
         statuses = ["I'm Busy",

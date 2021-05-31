@@ -66,6 +66,10 @@ class Help(Cog):
     async def on_ready(self):
         print("Help Cog Loaded")
 
+    async def cog_before_invoke(self, ctx):
+        if ctx.author.guild_permissions.manage_messages:
+            return ctx.command.reset_cooldown(ctx)
+
     async def cmd_help(self, ctx, command):
         embed = Embed(title=f"Help with `{command}`",
                       description=syntax(command),

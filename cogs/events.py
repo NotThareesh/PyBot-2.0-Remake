@@ -15,13 +15,13 @@ class Events(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
-            await ctx.send("Command not found.")
+            await ctx.send("Command not found.", delete_after=5.0)
 
         elif isinstance(error, CommandOnCooldown):
-            await ctx.send(f"Command is on cool down. Please retry after {round(error.retry_after)} seconds")
+            await ctx.send(f"Command is on cool down. Please retry after {round(error.retry_after)} seconds", delete_after=5.0)
 
         elif isinstance(error, MissingPermissions):
-            await ctx.send(f"@{ctx.author} doesn't have the required permissions.")
+            await ctx.send(f"@{ctx.author} doesn't have the required permissions.", delete_after=5.0)
 
     @Cog.listener()
     async def on_member_join(self, member):

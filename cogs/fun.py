@@ -1,11 +1,11 @@
 import discord
 from discord import Embed, Colour
 from discord.ext.commands import Cog, command, BucketType, cooldown
-from discord.utils import get
 import random
 from aiohttp import request
 from datetime import datetime
 from typing import Optional
+import json
 
 
 class Fun(Cog):
@@ -15,6 +15,10 @@ class Fun(Cog):
     @Cog.listener()
     async def on_ready(self):
         print("Fun Cog Loaded")
+
+    async def cog_before_invoke(self, ctx):
+        if ctx.author.guild_permissions.manage_messages:
+            return ctx.command.reset_cooldown(ctx)
 
     @command(description="Displays the version of the bot")
     @cooldown(1, 5, BucketType.user)
@@ -94,9 +98,9 @@ class Fun(Cog):
     async def birthday(self, ctx, member: discord.Member):
         await ctx.send(f"Hey {member.mention}, Happy Birthday")
 
-    @command(description="Returns that you slapped 'mentioned member' for 'reason'")
+    @command(description="Returns that you slapped another member")
     @cooldown(1, 5, BucketType.user)
-    async def slap(self, ctx, member: discord.Member, *, reason: Optional[str]):
+    async def slap(self, ctx, member: discord.Member):
         bot_users_id = []
 
         for bot_users in ctx.guild.members:
@@ -106,14 +110,11 @@ class Fun(Cog):
         if member.id in bot_users_id:
             await ctx.send("Hey, you can't slap bots!")
 
-        elif reason is None:
-            await ctx.send(f"{ctx.author.display_name} slapped {member.mention}")
-
         elif member.id == ctx.message.author.id:
             await ctx.send("Really? I don't think its a good idea.")
 
         else:
-            await ctx.send(f"{ctx.author.display_name} slapped {member.mention} for {reason}!")
+            await ctx.send(f"{ctx.author.mention} slapped {member.mention} in the face!")
 
     @command(description="Posts a gif/png of Pikachu")
     @cooldown(1, 5, BucketType.user)
@@ -236,20 +237,21 @@ class Fun(Cog):
     @cooldown(1, 5, BucketType.user)
     async def nickname(self, ctx, member: discord.Member, *, nick: Optional[str]):
         if nick:
-            if ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_guild or member == ctx.author:
+            if ctx.author.guild_permissions.manage_guild or member == ctx.author:
                 await member.edit(nick=nick)
                 await ctx.send(f"Nickname has been successfully changed to **{nick}**")
 
             else:
-                await ctx.send(f"You do not have the required permissions")
+                await ctx.send(f"You do not have the required permissions", delete_after=5.0)
 
         else:
-            if ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_guild or member == ctx.author:
-                await member.edit(nick=nick)
-                await ctx.send("Successfully removed nickname")
+            if member.nick == None:
+                await ctx.send(f"Member already doens't have a nickname.")
 
             else:
-                pass
+                if ctx.author.guild_permissions.manage_guild or member == ctx.author:
+                    await member.edit(nick=nick)
+                    await ctx.send("Successfully removed nickname")
 
 
 def setup(bot):

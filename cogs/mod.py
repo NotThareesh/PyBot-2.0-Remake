@@ -1,6 +1,8 @@
+from aiohttp import client
 import discord
 from discord.ext.commands.errors import MissingRequiredArgument
 from discord.ext.commands import Cog, command, has_permissions
+from typing import Optional
 from better_profanity import profanity
 import json
 
@@ -20,13 +22,19 @@ class Mod(Cog):
     async def on_ready(self):
         print("Mod Cog Loaded")
 
+    async def cog_before_invoke(self, ctx):
+        if ctx.author.guild_permissions.manage_messages:
+            return ctx.command.reset_cooldown(ctx)
+
     @Cog.listener()
     async def on_message(self, message):
-        if message.author == self.bot.user:
-            pass
-        else:
-            if profanity.contains_profanity(message.content):
-                await message.delete()
+        if profanity.contains_profanity(message.content):
+            await message.delete()
+        if self.bot.user.mentioned_in(message):
+            with open("prefixes.json", mode="r") as file:
+                prefixes = json.load(file)
+
+            await message.channel.send(f"Use **{prefixes[str(message.guild.id)]}help** to invoke the help command.")
 
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_permissions(administrator=True, manage_channels=True)
@@ -39,14 +47,9 @@ class Mod(Cog):
             await ctx.send(f"Tidying up your server")
             await ctx.channel.purge(limit=amount+2)
 
-    @clear.error
-    async def clear_error(self, ctx, error):
-        if isinstance(error, MissingRequiredArgument):
-            await ctx.send("Please specify the amount of messages to delete.")
-
     @command(description="Kicks members out of the server")
     @has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, *, reason=None):
+    async def kick(self, ctx, member: discord.Member, *, reason=Optional[str]):
         await member.kick(reason=reason)
         if reason:
             await ctx.send(f"{member.mention} was kicked for {reason}!")
@@ -55,7 +58,7 @@ class Mod(Cog):
 
     @command(description="Bans Members from the server")
     @has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason=None):
+    async def ban(self, ctx, member: discord.Member, *, reason=Optional[str]):
         await member.ban(reason=reason)
         await ctx.send(f"{member} was **banned**")
 
@@ -90,6 +93,8 @@ class Mod(Cog):
                 json.dump(prefixes, file, indent=4)
 
             await ctx.send(f"Prefix changed to **{prefix}**")
+
+            await ctx.guild.me.edit(nick=f"[{prefix}] {self.bot.user.name}")
 
 
 def setup(bot):
