@@ -50,21 +50,24 @@ class Discord(Cog):
     @command(description="Sends info about the server", aliases=["info"])
     @cooldown(1, 5, BucketType.user)
     async def server(self, ctx):
-        name = str(ctx.guild.name)
-        owner = str(ctx.guild.owner)
-        server_id = str(ctx.guild.id)
+        name = ctx.guild.name
+        owner = ctx.guild.owner.name
+        server_id = ctx.guild.id
         region = str(ctx.guild.region).capitalize()
-        icon = str(ctx.guild.icon_url)
-        member_count = str(ctx.guild.member_count)
+        icon = ctx.guild.icon_url
+        member_count = ctx.guild.member_count
         bot_users = 0
-        for i in ctx.guild.members:
-            if i.bot:
+
+        for bots in ctx.guild.members:
+            if bots.bot:
                 bot_users += 1
-        text_channels = str(len(ctx.guild.text_channels))
-        voice_channels = str(len(ctx.guild.voice_channels))
+
+        text_channels = len(ctx.guild.text_channels)
+        voice_channels = len(ctx.guild.voice_channels)
 
         embed = Embed(
-            title=name + " Server Information", color=Colour.red())
+            title=name + " Server Information", color=Colour(0x27E4FF))
+
         embed.add_field(name="Owner", value=owner, inline=False)
         embed.add_field(name="Server ID", value=server_id)
         embed.add_field(name="Region", value=region, inline=False)
@@ -73,6 +76,7 @@ class Discord(Cog):
         embed.add_field(name="Text Channels",
                         value=text_channels, inline=False)
         embed.add_field(name="Voice Channels", value=voice_channels)
+
         embed.set_thumbnail(url=icon)
 
         await ctx.send(embed=embed)
