@@ -70,7 +70,8 @@ class Discord(Cog):
 
         embed.add_field(name="Owner", value=owner, inline=False)
         embed.add_field(name="Server ID", value=server_id)
-        embed.add_field(name="Region", value=region, inline=False)
+        embed.add_field(name="Region", value=region)
+        embed.add_field(name="\u200b", value="\u200b")
         embed.add_field(name="Member Count", value=member_count)
         embed.add_field(name="Bots", value=str(bot_users))
         embed.add_field(name="\u200b", value="\u200b")

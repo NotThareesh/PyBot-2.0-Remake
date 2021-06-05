@@ -171,7 +171,7 @@ class Fun(Cog):
                     data = await response.json()
 
                     embed = Embed(
-                        title=f"{country.capitalize()} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
+                        title=f"{country.title()} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
                     embed.set_image(
                         url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
                     embed.set_thumbnail(url=f"{data['countryInfo']['flag']}")
@@ -193,8 +193,11 @@ class Fun(Cog):
                                     value=f"{data['deaths']:,}")
                     embed.add_field(name="Total Recovered",
                                     value=f"{data['recovered']:,}")
+
+                    user = await self.bot.fetch_user(755362525125672990)
+
                     embed.set_footer(
-                        text="Stay Safe Everybody ✌️")
+                        text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
 
                     await ctx.send(embed=embed)
 
@@ -225,8 +228,11 @@ class Fun(Cog):
                                     value=f"{data['deaths']:,}")
                     embed.add_field(name="Total Recovered",
                                     value=f"{data['recovered']:,}")
+
+                    user = await self.bot.fetch_user(755362525125672990)
+
                     embed.set_footer(
-                        text=f"Stay Safe Everybody ✌️")
+                        text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
 
                     await ctx.send(embed=embed)
                 else:

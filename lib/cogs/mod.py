@@ -1,9 +1,8 @@
 import discord
-from discord.ext.commands.errors import MissingRequiredArgument
 from discord.ext.commands import Cog, command, has_permissions
 from typing import Optional
 from better_profanity import profanity
-import json
+from ..db import db
 
 
 class Mod(Cog):
@@ -30,10 +29,9 @@ class Mod(Cog):
         if profanity.contains_profanity(message.content):
             await message.delete()
         if message.content == f"<@!{self.bot.user.id}>":
-            with open("prefixes.json", mode="r") as file:
-                prefixes = json.load(file)
-
-            await message.channel.send(f"Use **{prefixes[str(message.guild.id)]}help** to invoke the help command.")
+            prefix = db.field(
+                "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
+            await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
 
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_permissions(administrator=True, manage_channels=True)
@@ -78,20 +76,15 @@ class Mod(Cog):
 
     @command(description="Changes Bot Prefix", aliases=["changeprefix"])
     @has_permissions(manage_guild=True)
-    async def chprefix(self, ctx, prefix: str = "!"):
+    async def chprefix(self, ctx, prefix: str):
         if len(prefix) > 5:
-            await ctx.send("Prefix cannot be more than 5 characters.")
+            await ctx.send("The prefix can not be more than 5 characters in length.")
 
         else:
-            with open("prefixes.json", mode="r") as file:
-                prefixes = json.load(file)
+            db.execute(
+                "UPDATE guilds SET Prefix = ? WHERE GuildID = ?", prefix, ctx.guild.id)
 
-            prefixes[str(ctx.guild.id)] = prefix
-
-            with open("prefixes.json", mode="w") as file:
-                json.dump(prefixes, file, indent=4)
-
-            await ctx.send(f"Prefix changed to **{prefix}**")
+            await ctx.send(f"Prefix set to **{prefix}**.")
 
             await ctx.guild.me.edit(nick=f"[{prefix}] {self.bot.user.name}")
 
