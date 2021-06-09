@@ -16,7 +16,7 @@ intents = discord.Intents(messages=True, guilds=True,
 
 bot = Bot(command_prefix=get_prefix, intents=intents, help_command=None)
 
-TOKEN = 'Nzc3NzM2Mjg2MzQ1NzU2NzQz.X7HxXA.RBsDDLiw3-_W7ft0hK_rl2N3Yhg'
+TOKEN = os.getenv('TOKEN')
 
 scheduler = AsyncIOScheduler()
 
