@@ -60,11 +60,6 @@ class Fun(Cog):
 
         await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
-    @command(description="Duplicates your message")
-    @cooldown(1, 5, BucketType.user)
-    async def echo(self, ctx, *, message: Optional[str]):
-        await ctx.send(message)
-
     @command(description="Returns a meme")
     @cooldown(1, 5, BucketType.user)
     async def meme(self, ctx):
@@ -100,13 +95,7 @@ class Fun(Cog):
     @command(description="Returns that you slapped another member")
     @cooldown(1, 5, BucketType.user)
     async def slap(self, ctx, member: discord.Member):
-        bot_users_id = []
-
-        for bot_users in ctx.guild.members:
-            if bot_users.bot:
-                bot_users_id.append(bot_users.id)
-
-        if member.id in bot_users_id:
+        if member.id in [member.id for member in ctx.guild.members if member.bot]:
             await ctx.send("Hey, you can't slap bots!")
 
         elif member.id == ctx.message.author.id:
@@ -172,8 +161,6 @@ class Fun(Cog):
 
                     embed = Embed(
                         title=f"{country.title()} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
-                    embed.set_image(
-                        url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
                     embed.set_thumbnail(url=f"{data['countryInfo']['flag']}")
                     embed.add_field(name="Total Population", value="{:,}".format(
                         data['population']))

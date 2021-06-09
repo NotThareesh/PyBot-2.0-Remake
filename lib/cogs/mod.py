@@ -29,15 +29,15 @@ class Mod(Cog):
         if profanity.contains_profanity(message.content):
             await message.delete()
 
-        if not message.author == self.bot.user:
-            if f"<@!{self.bot.user.id}>" == message.content:
-                prefix = db.field(
-                    "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
-                await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
+        if message.content == f"<@!{self.bot.user.id}>":
+            prefix = db.field(
+                "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
 
-    @command(description="Clears messages in a particular channel. Defaults to 10 messages")
+            await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
+
+    @command(description="Deletes messages in a particular channel")
     @has_permissions(administrator=True, manage_channels=True)
-    async def clear(self, ctx, amount: int = 10):
+    async def clear(self, ctx, amount: Optional[int]):
         if amount <= 0:
             await ctx.send("Please provide a valid number")
         elif amount > 100:
@@ -48,12 +48,10 @@ class Mod(Cog):
 
     @command(description="Kicks members out of the server")
     @has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, *, reason=Optional[str]):
-        await member.kick(reason=reason)
-        if reason:
-            await ctx.send(f"{member.mention} was kicked for {reason}!")
-        else:
-            await ctx.send(f"{member.mention} was kicked!")
+    async def kick(self, ctx, member: discord.Member):
+        await member.kick()
+
+        await ctx.send(f"{member.mention} was kicked!")
 
     @command(description="Bans Members from the server")
     @has_permissions(ban_members=True)

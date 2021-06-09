@@ -50,35 +50,25 @@ class Discord(Cog):
     @command(description="Sends info about the server", aliases=["info"])
     @cooldown(1, 5, BucketType.user)
     async def server(self, ctx):
-        name = ctx.guild.name
-        owner = ctx.guild.owner.name
-        server_id = ctx.guild.id
-        region = str(ctx.guild.region).capitalize()
-        icon = ctx.guild.icon_url
-        member_count = ctx.guild.member_count
-        bot_users = 0
-
-        for bots in ctx.guild.members:
-            if bots.bot:
-                bot_users += 1
-
-        text_channels = len(ctx.guild.text_channels)
-        voice_channels = len(ctx.guild.voice_channels)
-
         embed = Embed(
-            title=name + " Server Information", color=Colour(0x27E4FF))
+            title=ctx.guild.name + " Server Information", color=Colour(0x27E4FF))
 
-        embed.add_field(name="Owner", value=owner, inline=False)
-        embed.add_field(name="Server ID", value=server_id)
-        embed.add_field(name="Region", value=region)
+        embed.add_field(name="Owner", value=ctx.guild.owner.name, inline=False)
+        embed.add_field(name="Server ID", value=ctx.guild.id)
+        embed.add_field(name="Region", value=str(
+            ctx.guild.region).capitalize())
         embed.add_field(name="\u200b", value="\u200b")
-        embed.add_field(name="Member Count", value=member_count)
-        embed.add_field(name="Bots", value=str(bot_users))
+        embed.add_field(name="Humans Count", value=len(
+            list(filter(lambda user: not user.bot, ctx.guild.members))))
+        embed.add_field(name="Bots", value=len(
+            list(filter(lambda user: user.bot, ctx.guild.members))))
         embed.add_field(name="\u200b", value="\u200b")
-        embed.add_field(name="Text Channels", value=text_channels)
-        embed.add_field(name="Voice Channels", value=voice_channels)
+        embed.add_field(name="Text Channels",
+                        value=len(ctx.guild.text_channels))
+        embed.add_field(name="Voice Channels",
+                        value=len(ctx.guild.voice_channels))
 
-        embed.set_thumbnail(url=icon)
+        embed.set_thumbnail(url=ctx.guild.icon_url)
 
         await ctx.send(embed=embed)
 
