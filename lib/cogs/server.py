@@ -17,7 +17,7 @@ class Discord(Cog):
         if ctx.author.guild_permissions.manage_messages:
             return ctx.command.reset_cooldown(ctx)
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(hours=1)
     async def bot_status(self):
         statuses = ["I'm Busy",
                     f"{len(self.bot.guilds)} Server" if len(

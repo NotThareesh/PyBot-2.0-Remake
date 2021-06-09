@@ -28,10 +28,12 @@ class Mod(Cog):
     async def on_message(self, message):
         if profanity.contains_profanity(message.content):
             await message.delete()
-        if message.content == f"<@!{self.bot.user.id}>":
-            prefix = db.field(
-                "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
-            await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
+
+        if not message.author == self.bot.user:
+            if f"<@!{self.bot.user.id}>" == message.content:
+                prefix = db.field(
+                    "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
+                await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
 
     @command(description="Clears messages in a particular channel. Defaults to 10 messages")
     @has_permissions(administrator=True, manage_channels=True)
@@ -73,20 +75,6 @@ class Mod(Cog):
                 await ctx.send(f"{member.mention} was unbanned")
 
                 return
-
-    @command(description="Changes Bot Prefix", aliases=["changeprefix"])
-    @has_permissions(manage_guild=True)
-    async def chprefix(self, ctx, prefix: str):
-        if len(prefix) > 5:
-            await ctx.send("The prefix can not be more than 5 characters in length.")
-
-        else:
-            db.execute(
-                "UPDATE guilds SET Prefix = ? WHERE GuildID = ?", prefix, ctx.guild.id)
-
-            await ctx.send(f"Prefix set to **{prefix}**.")
-
-            await ctx.guild.me.edit(nick=f"[{prefix}] {self.bot.user.name}")
 
 
 def setup(bot):

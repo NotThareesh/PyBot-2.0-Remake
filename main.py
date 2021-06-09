@@ -28,7 +28,7 @@ for filename in os.listdir("lib/cogs"):
 db.autosave(scheduler)
 
 
-@ bot.event
+@bot.event
 async def on_ready():
     print("Bot is online")
     print(f"Logged in as: {bot.user.name}")

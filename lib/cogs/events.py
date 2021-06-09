@@ -15,16 +15,6 @@ class Events(Cog):
         print("Events Cog Loaded")
 
     @Cog.listener()
-    async def on_error(self, error, *args, **kwargs):
-        if error == "on_command_error":
-            await args[0].send("Something went wrong.")
-
-        channel = await self.bot.get_channel(778465578834853918)
-        await channel.send("An Error Occured.")
-
-        raise error
-
-    @Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
             pass
