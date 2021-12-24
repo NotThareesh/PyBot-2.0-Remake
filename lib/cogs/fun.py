@@ -150,49 +150,90 @@ class Fun(Cog):
 
     @command(description="Posts Covid19 Stats", aliases=["covid19"])
     @cooldown(1, 5, BucketType.user)
-    async def covid(self, ctx, country: Optional[str]):
+    async def covid(self, ctx, country: Optional[str], yesterday: Optional[str]):
+        if country != None:
+            # Per country Covid Stats
+            if country:
+                url = f"https://corona.lmao.ninja/v2/countries/{country}?strict=true&yesterday=1" if yesterday else f"https://corona.lmao.ninja/v2/countries/{country}?strict=true"
 
-        if country:
-            url = f"https://corona.lmao.ninja/v2/countries/{country}?strict=true"
+                async with request("GET", url) as response:
+                    if response.status == 200:
+                        data = await response.json()
 
-            async with request("GET", url) as response:
-                if response.status == 200:
-                    data = await response.json()
+                        embed = Embed(
+                            title=f"{country.title()} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
+                        embed.set_thumbnail(
+                            url=f"{data['countryInfo']['flag']}")
+                        embed.add_field(name="Total Population", value="{:,}".format(
+                            data['population']))
+                        embed.add_field(
+                            name="\u200b", value="\u200b")
+                        embed.add_field(
+                            name="\u200b", value="\u200b")
+                        embed.add_field(
+                            name="Today Covid Cases" if not yesterday else "Yesterday Covid Cases", value="None/Not Updated" if data['todayCases'] == 0 else f"{data['todayCases']:,}")
+                        embed.add_field(
+                            name="Today Covid Deaths" if not yesterday else "Yesterday Covid Deaths", value="None/Not Updated" if data['todayDeaths'] == 0 else f"{data['todayDeaths']:,}")
+                        embed.add_field(
+                            name="\u200b", value="\u200b")
+                        embed.add_field(name="Total Covid Cases",
+                                        value=f"{data['cases']:,}")
+                        embed.add_field(name="Total Covid Deaths",
+                                        value=f"{data['deaths']:,}")
+                        embed.add_field(name="Total Recovered",
+                                        value=f"{data['recovered']:,}")
 
-                    embed = Embed(
-                        title=f"{country.title()} Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
-                    embed.set_thumbnail(url=f"{data['countryInfo']['flag']}")
-                    embed.add_field(name="Total Population", value="{:,}".format(
-                        data['population']))
-                    embed.add_field(
-                        name="\u200b", value="\u200b")
-                    embed.add_field(
-                        name="\u200b", value="\u200b")
-                    embed.add_field(
-                        name="Today Covid Cases", value="None/Not Updated" if data['todayCases'] == 0 else f"{data['todayCases']:,}")
-                    embed.add_field(
-                        name="Today Covid Deaths", value="None/Not Updated" if data['todayDeaths'] == 0 else f"{data['todayDeaths']:,}")
-                    embed.add_field(
-                        name="\u200b", value="\u200b")
-                    embed.add_field(name="Total Covid Cases",
-                                    value=f"{data['cases']:,}")
-                    embed.add_field(name="Total Covid Deaths",
-                                    value=f"{data['deaths']:,}")
-                    embed.add_field(name="Total Recovered",
-                                    value=f"{data['recovered']:,}")
+                        user = await self.bot.fetch_user(755362525125672990)
 
-                    user = await self.bot.fetch_user(755362525125672990)
+                        embed.set_footer(
+                            text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
 
-                    embed.set_footer(
-                        text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
+                        await ctx.send(embed=embed)
 
-                    await ctx.send(embed=embed)
+                    else:
+                        if not response.status == 404:
+                            await ctx.send(f"API responded with {response.status} status")
+                        else:
+                            await ctx.send("Country Not Found :)")
 
-                else:
-                    await ctx.send(f"API responded with {response.status} status")
+            # Global Previous Day's Covid Stats
+            elif country.lower() == "true":
+                url = "https://corona.lmao.ninja/v2/all?yesterday=true"
 
+                async with request("GET", url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+
+                        embed = Embed(
+                            title="Global Covid-19 Cases", colour=Colour(0x27E4FF), timestamp=datetime.utcfromtimestamp(data['updated']/1000))
+                        embed.set_image(
+                            url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
+
+                        embed.add_field(name="Yesterday Covid Cases",
+                                        value=f"{data['todayCases']:,}")
+                        embed.add_field(name="Yesterday Covid Deaths",
+                                        value=f"{data['todayDeaths']:,}")
+                        embed.add_field(
+                            name="\u200b", value="\u200b")
+                        embed.add_field(name="Total Covid Cases",
+                                        value=f"{data['cases']:,}")
+                        embed.add_field(name="Total Covid Deaths",
+                                        value=f"{data['deaths']:,}")
+                        embed.add_field(name="Total Recovered",
+                                        value=f"{data['recovered']:,}")
+
+                        user = await self.bot.fetch_user(755362525125672990)
+
+                        embed.set_footer(
+                            text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
+
+                        await ctx.send(embed=embed)
+                    else:
+                        await ctx.send(f"API responded with {response.status} status")
+
+        # Global Covid Stats
         else:
-            url = "https://corona.lmao.ninja/v2/all"
+            url = "https://corona.lmao.ninja/v2/all?yesterday=true"
 
             async with request("GET", url) as response:
                 if response.status == 200:
