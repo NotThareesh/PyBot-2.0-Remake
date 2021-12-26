@@ -20,8 +20,7 @@ class Discord(Cog):
     @tasks.loop(hours=1)
     async def bot_status(self):
         statuses = ["I'm Busy",
-                    f"{len(self.bot.guilds)} Server" if len(
-                        self.bot.guilds) <= 1 else f"{len(self.bot.guilds)} Servers",
+                    f"{len(self.bot.guilds)} Servers",
                     "Compiling the code",
                     "Fortnite",
                     "help", ]

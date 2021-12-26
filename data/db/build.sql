@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS guilds (
 	GuildID integer PRIMARY KEY,
 	Prefix text DEFAULT "!",
     WelcomeChannel integer,
-    LeaveChannel integer
+    LeaveChannel integer,
+    Profanity integer DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS exp(

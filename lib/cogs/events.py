@@ -4,7 +4,7 @@ from discord.errors import Forbidden
 from ..db import db
 
 
-IGNORE_ERRORS = (CommandNotFound, BadArgument, Forbidden)
+IGNORE_ERRORS = (CommandNotFound, BadArgument)
 
 
 class Events(Cog):

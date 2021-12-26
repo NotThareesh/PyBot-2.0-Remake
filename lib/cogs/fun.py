@@ -128,8 +128,8 @@ class Fun(Cog):
             else:
                 await ctx.send(f"API returned a {response.status} status.")
 
-    @command(description="Posts a picture of your Fortnite stats")
-    @cooldown(1, 5, BucketType.user)
+    @ command(description="Posts a picture of your Fortnite stats")
+    @ cooldown(1, 5, BucketType.user)
     async def fn(self, ctx, *, name: str):
         url = "https://fortnite-api.com/v1/stats/br/v2"
 

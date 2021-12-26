@@ -26,8 +26,12 @@ class Mod(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        if profanity.contains_profanity(message.content):
-            await message.delete()
+        prof = db.field(
+            "SELECT Profanity FROM guilds WHERE GuildID = ?", message.guild.id)
+
+        if prof != 0:
+            if profanity.contains_profanity(message.content):
+                await message.delete()
 
         if message.content == f"<@!{self.bot.user.id}>":
             prefix = db.field(
@@ -73,6 +77,27 @@ class Mod(Cog):
                 await ctx.send(f"{member.mention} was unbanned")
 
                 return
+
+    @command()
+    @has_permissions(manage_messages=True)
+    async def profanity(self, ctx, value: Optional[str]):
+
+        if not value is None:
+            if value.lower() in ('1', 'true', 'enable'):
+                db.execute(
+                    "UPDATE guilds SET Profanity = ? WHERE GuildID = ?", 1, ctx.guild.id)
+
+                await ctx.send("Profanity filter is enabled in this server")
+            elif value.lower() in ('0', 'false', 'disable'):
+                db.execute(
+                    "UPDATE guilds SET Profanity = ? WHERE GuildID = ?", 0, ctx.guild.id)
+
+                await ctx.send("Profanity filter is disabled in this server")
+        else:
+            if db.execute("SELECT Profanity FROM guilds WHERE GuildID = ?", ctx.guild.id) == 1:
+                await ctx.send("Profanity filter is enabled")
+            else:
+                await ctx.send("Profanity filter is diabled")
 
 
 def setup(bot):

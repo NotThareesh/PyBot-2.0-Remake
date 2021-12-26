@@ -13,8 +13,7 @@ def syntax(command):
 
     for key, value in command.params.items():
         if key not in ("self", "ctx"):
-            params.append(f"[{key}]" if "Optional" in str(
-                value) else f"<{key}>")
+            params.append(f"[{key}]" if "Union" in str(value) else f"<{key}>")
 
     if len(params) != 0:
         params = " ".join(params)
