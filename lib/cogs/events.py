@@ -75,5 +75,5 @@ class Events(Cog):
         await self.bot.get_channel(778465578834853918).send(f"Bot has left {guild.name} server.")
 
 
-def setup(bot):
-    bot.add_cog(Events(bot))
+async def setup(bot):
+    await bot.add_cog(Events(bot))

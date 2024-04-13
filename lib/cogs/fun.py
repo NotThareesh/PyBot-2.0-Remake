@@ -151,7 +151,7 @@ class Fun(Cog):
     @command(description="Posts Covid19 Stats", aliases=["covid19"])
     @cooldown(1, 5, BucketType.user)
     async def covid(self, ctx, country: Optional[str], yesterday: Optional[str]):
-        if country != None:
+        if country is not None:
             # Per country Covid Stats
             if country:
                 url = f"https://corona.lmao.ninja/v2/countries/{country}?strict=true&yesterday=1" if yesterday else f"https://corona.lmao.ninja/v2/countries/{country}?strict=true"
@@ -278,8 +278,8 @@ class Fun(Cog):
                 await ctx.send(f"You do not have the required permissions", delete_after=5.0)
 
         else:
-            if member.nick == None:
-                await ctx.send(f"Member already doens't have a nickname.")
+            if member.nick is None:
+                await ctx.send(f"Member already doesn't have a nickname.")
 
             else:
                 if ctx.author.guild_permissions.manage_guild or member == ctx.author:
@@ -287,5 +287,5 @@ class Fun(Cog):
                     await ctx.send("Successfully removed nickname")
 
 
-def setup(bot):
-    bot.add_cog(Fun(bot))
+async def setup(bot):
+    await bot.add_cog(Fun(bot))

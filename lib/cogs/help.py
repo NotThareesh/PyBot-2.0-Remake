@@ -94,5 +94,5 @@ class Help(Cog):
                 await ctx.send("That command does not exist.")
 
 
-def setup(bot):
-    bot.add_cog(Help(bot))
+async def setup(bot):
+    await bot.add_cog(Help(bot))

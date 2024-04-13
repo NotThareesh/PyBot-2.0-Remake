@@ -33,7 +33,7 @@ class Mod(Cog):
             if profanity.contains_profanity(message.content):
                 await message.delete()
 
-        if message.content == f"<@!{self.bot.user.id}>":
+        if message.content == f"<@{self.bot.user.id}>" and message.mention_everyone is False:
             prefix = db.field(
                 "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
 
@@ -78,7 +78,7 @@ class Mod(Cog):
 
                 return
 
-    @command()
+    @command(description="Control Profanity Filter")
     @has_permissions(manage_messages=True)
     async def profanity(self, ctx, value: Optional[str]):
 
@@ -100,5 +100,5 @@ class Mod(Cog):
                 await ctx.send("Profanity filter is diabled")
 
 
-def setup(bot):
-    bot.add_cog(Mod(bot))
+async def setup(bot):
+    await bot.add_cog(Mod(bot))

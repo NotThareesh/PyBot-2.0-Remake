@@ -47,5 +47,5 @@ class Setup(Cog):
         await ctx.send(f"Leave channel is set to {channelID.mention}")
 
 
-def setup(bot):
-    bot.add_cog(Setup(bot))
+async def setup(bot):
+    await bot.add_cog(Setup(bot))
