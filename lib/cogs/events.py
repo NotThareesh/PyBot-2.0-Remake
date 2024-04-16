@@ -33,8 +33,7 @@ class Events(Cog):
             await ctx.send(f"I am not allowed to do it. Please check my permissions.", delete_after=5.0)
 
         else:
-            await self.bot.get_channel(778465578834853918).send("Something went wrong..")
-            raise error
+            print(error)
 
     @Cog.listener()
     async def on_member_join(self, member):

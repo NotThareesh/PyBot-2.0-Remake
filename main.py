@@ -3,7 +3,6 @@ from discord.ext.commands import Bot, when_mentioned_or
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import os
 from lib.db import db
-import secret
 import asyncio
 
 

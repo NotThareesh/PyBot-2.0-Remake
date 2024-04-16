@@ -1,4 +1,6 @@
 env
 *.pyc
-secret.py
 data/db/database.db
+Dockerfile
+.dockerignore
+token.env

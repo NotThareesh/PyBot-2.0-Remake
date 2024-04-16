@@ -8,6 +8,7 @@ from ..db import db
 class Mod(Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.data = {}
 
         with open("./words/whitelisted_words.txt", "r") as white_words_file:
             white_words_list = []
@@ -15,6 +16,13 @@ class Mod(Cog):
                 white_words_list.append(x.strip("\n"))
 
         profanity.load_censor_words(whitelist_words=white_words_list)
+
+        query = db.execute("SELECT GuildID, Prefix, Profanity FROM guilds")
+
+        result = db.cur.fetchall()
+
+        for id, prefix, prof in result:
+            self.data[id] = [prefix, prof]
 
     @Cog.listener()
     async def on_ready(self):
@@ -26,16 +34,14 @@ class Mod(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        prof = db.field(
-            "SELECT Profanity FROM guilds WHERE GuildID = ?", message.guild.id)
+        prof = self.data[message.guild.id][1]
 
         if prof != 0:
             if profanity.contains_profanity(message.content):
                 await message.delete()
 
         if message.content == f"<@{self.bot.user.id}>" and message.mention_everyone is False:
-            prefix = db.field(
-                "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
+            prefix = self.data[message.guild.id][0]
 
             await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
 
