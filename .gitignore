@@ -1,6 +1,8 @@
 env
 *.pyc
 data/db/database.db
+*.db-journal
 Dockerfile
 .dockerignore
+docker-compose.yml
 token.env

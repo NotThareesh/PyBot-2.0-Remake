@@ -10,7 +10,7 @@ class Mod(Cog):
         self.bot = bot
         self.data = {}
 
-        with open("./words/whitelisted_words.txt", "r") as white_words_file:
+        with open("whitelisted_words.txt", "r") as white_words_file:
             white_words_list = []
             for x in white_words_file.readlines():
                 white_words_list.append(x.strip("\n"))
