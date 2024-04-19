@@ -4,6 +4,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import os
 from lib.db import db
 import asyncio
+from keep_alive import keep_alive
 
 
 def get_prefix(bot, message):
@@ -26,13 +27,15 @@ async def load_extension():
         if filename.endswith('.py'):
             await bot.load_extension(f'lib.cogs.{filename[:-3]}')
 
-db.autosave(scheduler)
-
 
 @bot.event
 async def on_ready():
     print("Bot is online")
     print(f"Logged in as: {bot.user.name}")
+
+    # Database Scheduling
+    db.autosave(scheduler)
+    scheduler.start()
 
 
 async def main():
@@ -40,6 +43,5 @@ async def main():
         await load_extension()
         await bot.start(TOKEN)
 
-scheduler.start()
-
+keep_alive()
 asyncio.run(main())

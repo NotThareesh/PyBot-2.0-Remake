@@ -1,4 +1,3 @@
-from typing import Optional
 from discord.ext.commands import command, Cog, has_permissions
 from discord.ext.commands.converter import TextChannelConverter
 from discord.ext.commands.errors import ChannelNotFound
@@ -24,7 +23,6 @@ class Setup(Cog):
                 "UPDATE guilds SET Prefix = ? WHERE GuildID = ?", prefix, ctx.guild.id)
 
             await ctx.send(f"Prefix set to **{prefix}**.")
-
             await ctx.guild.me.edit(nick=f"[{prefix}] {self.bot.user.name}")
 
     @command(description="Sets the welcome channel", aliases=["welcome"])

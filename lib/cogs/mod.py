@@ -18,7 +18,6 @@ class Mod(Cog):
         profanity.load_censor_words(whitelist_words=white_words_list)
 
         query = db.execute("SELECT GuildID, Prefix, Profanity FROM guilds")
-
         result = db.cur.fetchall()
 
         for id, prefix, prof in result:
@@ -36,12 +35,13 @@ class Mod(Cog):
     async def on_message(self, message):
         prof = self.data[message.guild.id][1]
 
-        if prof != 0:
+        if prof == 1:
             if profanity.contains_profanity(message.content):
                 await message.delete()
 
         if message.content == f"<@{self.bot.user.id}>" and message.mention_everyone is False:
-            prefix = self.data[message.guild.id][0]
+            prefix = db.field(
+                "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
 
             await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
 
@@ -87,23 +87,26 @@ class Mod(Cog):
     @command(description="Control Profanity Filter")
     @has_permissions(manage_messages=True)
     async def profanity(self, ctx, value: Optional[str]):
-
         if not value is None:
             if value.lower() in ('1', 'true', 'enable'):
                 db.execute(
                     "UPDATE guilds SET Profanity = ? WHERE GuildID = ?", 1, ctx.guild.id)
+
+                self.data[ctx.guild.id][1] = 1
 
                 await ctx.send("Profanity filter is enabled in this server")
             elif value.lower() in ('0', 'false', 'disable'):
                 db.execute(
                     "UPDATE guilds SET Profanity = ? WHERE GuildID = ?", 0, ctx.guild.id)
 
+                self.data[ctx.guild.id][1] = 0
+
                 await ctx.send("Profanity filter is disabled in this server")
         else:
             if db.execute("SELECT Profanity FROM guilds WHERE GuildID = ?", ctx.guild.id) == 1:
                 await ctx.send("Profanity filter is enabled")
             else:
-                await ctx.send("Profanity filter is diabled")
+                await ctx.send("Profanity filter is disabled")
 
 
 async def setup(bot):
