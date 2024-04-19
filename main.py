@@ -4,7 +4,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import os
 from lib.db import db
 import asyncio
-from keep_alive import keep_alive
 
 
 def get_prefix(bot, message):
@@ -43,5 +42,4 @@ async def main():
         await load_extension()
         await bot.start(TOKEN)
 
-keep_alive()
 asyncio.run(main())
