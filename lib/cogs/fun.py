@@ -1,6 +1,6 @@
 import discord
 from discord import Embed, Colour
-from discord.ext.commands import Cog, command, BucketType, cooldown
+from discord.ext.commands import Cog, command, BucketType, cooldown, hybrid_command
 import random
 from aiohttp import request
 from typing import Optional
@@ -18,22 +18,22 @@ class Fun(Cog):
         if ctx.author.guild_permissions.manage_messages:
             return ctx.command.reset_cooldown(ctx)
 
-    @command(description="Displays the version of the bot")
+    @hybrid_command(description="Displays the version of the bot")
     @cooldown(1, 5, BucketType.user)
     async def version(self, ctx):
-        await ctx.send("I am PyBot 2.0")
+        await ctx.reply("I am PyBot 2.0")
 
-    @command(description="Returns bot latency")
+    @hybrid_command(description="Returns bot latency")
     @cooldown(1, 5, BucketType.user)
     async def ping(self, ctx):
-        await ctx.send(f"Pong! {round(self.bot.latency * 1000)}ms")
+        await ctx.reply(f"Pong! {round(self.bot.latency * 1000)}ms", ephemeral=True)
 
-    @command(description="Returns Poggies!", aliases=['lachy'])
+    @hybrid_command(description="Returns Poggies!", aliases=['lachy'])
     @cooldown(1, 5, BucketType.user)
     async def pog(self, ctx):
-        await ctx.send("POGGIES!")
+        await ctx.reply("POGGIES!")
 
-    @command(name="8ball", description="Returns a random message from a 8-Ball")
+    @hybrid_command(name="8ball", description="Returns a random message from a 8-Ball")
     @cooldown(1, 5, BucketType.user)
     async def _8ball(self, ctx, *, question):
         responses = ["It is certain.",
@@ -57,9 +57,9 @@ class Fun(Cog):
                      "Outlook not so good.",
                      "Very doubtful."]
 
-        await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
+        await ctx.reply(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
-    @command(description="Returns a meme")
+    @hybrid_command(description="Returns a meme")
     @cooldown(1, 5, BucketType.user)
     async def meme(self, ctx):
         url = "https://meme-api.herokuapp.com/gimme"
@@ -68,11 +68,11 @@ class Fun(Cog):
                 data = await response.json()
                 embed = Embed(title=data["title"], colour=Colour(0x27E4FF))
                 embed.set_image(url=data["url"])
-                await ctx.send(embed=embed)
+                await ctx.reply(embed=embed)
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.reply(f"API returned a {response.status} status.")
 
-    @command(description="Returns a joke")
+    @hybrid_command(description="Returns a joke")
     @cooldown(1, 5, BucketType.user)
     async def joke(self, ctx):
         url = "https://sv443.net/jokeapi/v2/joke/Miscellaneous,Dark,Pun?blacklistFlags=nsfw,religious,political,racist,sexist&type=twopart"
@@ -81,29 +81,29 @@ class Fun(Cog):
                 data = await response.json()
                 embed = Embed(title=data["setup"], colour=Colour(0x27E4FF))
                 embed.add_field(name="\u200b", value=data["delivery"])
-                await ctx.send(embed=embed)
+                await ctx.reply(embed=embed)
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.reply(f"API returned a {response.status} status.")
 
-    @command(description="Wishes the member 'Happy Birthday'", aliases=["bday", "hbd"])
+    @hybrid_command(description="Wishes the member 'Happy Birthday'", aliases=["bday", "hbd"])
     @cooldown(1, 5, BucketType.user)
     async def birthday(self, ctx, member: discord.Member):
-        await ctx.send(f"Hey {member.mention}, Happy Birthday")
+        await ctx.reply(f"Hey {member.mention}, Happy Birthday")
 
-    @command(description="Returns that you slapped another member")
+    @hybrid_command(description="Returns that you slapped another member")
     @cooldown(1, 5, BucketType.user)
     async def slap(self, ctx, member: discord.Member):
         if member.id in [member.id for member in ctx.guild.members if member.bot]:
-            await ctx.send("Hey, you can't slap bots!")
+            await ctx.reply("Hey, you can't slap bots!")
 
         elif member.id == ctx.message.author.id:
-            await ctx.send("Really? I don't think its a good idea.")
+            await ctx.reply("Really? I don't think its a good idea.")
 
         else:
-            await ctx.send(f"{ctx.author.mention} slapped {member.mention} in the face!")
+            await ctx.reply(f"{ctx.author.mention} slapped {member.mention} in the face!")
 
-    @command(description="Posts a image of Pikachu")
+    @hybrid_command(description="Posts a image of Pikachu")
     @cooldown(1, 5, BucketType.user)
     async def pikachu(self, ctx):
         url = "https://some-random-api.ml/img/pikachu"
@@ -116,38 +116,38 @@ class Fun(Cog):
                     embed = Embed(title="Here's an image of Pikachu",
                                   colour=Colour(0x27E4FF))
                     embed.set_image(url=data["link"])
-                    await ctx.send(embed=embed)
+                    await ctx.reply(embed=embed)
 
                 else:
                     embed = Embed(
                         title=f"Here's a picture of Pikachu", colour=Colour(0x27E4FF))
                     embed.set_image(url=data["link"])
-                    await ctx.send(embed=embed)
+                    await ctx.reply(embed=embed)
 
             else:
-                await ctx.send(f"API returned a {response.status} status.")
+                await ctx.reply(f"API returned a {response.status} status.")
 
-    @ command(description="Posts a picture of your Fortnite stats")
-    @ cooldown(1, 5, BucketType.user)
+    @hybrid_command(description="Posts a picture of your Fortnite stats")
+    @cooldown(1, 5, BucketType.user)
     async def fn(self, ctx, *, name: str):
         url = "https://fortnite-api.com/v1/stats/br/v2"
 
         async with request("GET", url, params={"name": name, "image": "all"}) as response:
             if response.status == 200:
                 data = await response.json()
-                await ctx.send(data["data"]["image"])
+                await ctx.reply(data["data"]["image"])
 
             elif response.status == 403:
-                await ctx.send("The given user's account stats is private.")
+                await ctx.reply("The given user's account stats is private.")
 
             elif response.status == 404:
-                await ctx.send("User not found")
+                await ctx.reply("User not found")
 
             else:
                 print(url)
-                await ctx.send(f"API returned {response.status} status.")
+                await ctx.reply(f"API returned {response.status} status.")
 
-    # @command(description="Posts Covid19 Stats", aliases=["covid19"])
+    # @hybrid_command(description="Posts Covid19 Stats", aliases=["covid19"])
     # @cooldown(1, 5, BucketType.user)
     # async def covid(self, ctx, country: Optional[str], yesterday: Optional[str]):
     #     if country is not None:
@@ -187,13 +187,13 @@ class Fun(Cog):
     #                     embed.set_footer(
     #                         text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
 
-    #                     await ctx.send(embed=embed)
+    #                     await ctx.reply(embed=embed)
 
     #                 else:
     #                     if not response.status == 404:
-    #                         await ctx.send(f"API responded with {response.status} status")
+    #                         await ctx.reply(f"API responded with {response.status} status")
     #                     else:
-    #                         await ctx.send("Country Not Found :)")
+    #                         await ctx.reply("Country Not Found :)")
 
     #         # Global Previous Day's Covid Stats
     #         elif country.lower() == "true":
@@ -226,9 +226,9 @@ class Fun(Cog):
     #                     embed.set_footer(
     #                         text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
 
-    #                     await ctx.send(embed=embed)
+    #                     await ctx.reply(embed=embed)
     #                 else:
-    #                     await ctx.send(f"API responded with {response.status} status")
+    #                     await ctx.reply(f"API responded with {response.status} status")
 
     #     # Global Covid Stats
     #     else:
@@ -261,29 +261,29 @@ class Fun(Cog):
     #                 embed.set_footer(
     #                     text="Stay Safe Everybody ✌️", icon_url=user.avatar_url)
 
-    #                 await ctx.send(embed=embed)
+    #                 await ctx.reply(embed=embed)
     #             else:
-    #                 await ctx.send(f"API responded with {response.status} status")
+    #                 await ctx.reply(f"API responded with {response.status} status")
 
-    @command(description="Changes Nickname of Member", aliases=["nick"])
+    @hybrid_command(description="Changes Nickname of Member", aliases=["nick"])
     @cooldown(1, 5, BucketType.user)
     async def nickname(self, ctx, member: discord.Member, *, nick: Optional[str]):
         if nick:
             if ctx.author.guild_permissions.manage_guild or member == ctx.author:
                 await member.edit(nick=nick)
-                await ctx.send(f"Nickname has been successfully changed to **{nick}**")
+                await ctx.reply(f"Nickname has been successfully changed to **{nick}**")
 
             else:
-                await ctx.send(f"You do not have the required permissions", delete_after=5.0)
+                await ctx.reply(f"You do not have the required permissions", delete_after=5.0)
 
         else:
             if member.nick is None:
-                await ctx.send(f"Member already doesn't have a nickname.")
+                await ctx.reply(f"Member already doesn't have a nickname.")
 
             else:
                 if ctx.author.guild_permissions.manage_guild or member == ctx.author:
                     await member.edit(nick=nick)
-                    await ctx.send("Successfully removed nickname")
+                    await ctx.reply("Successfully removed nickname")
 
 
 async def setup(bot):

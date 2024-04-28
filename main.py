@@ -28,8 +28,7 @@ async def load_extension():
 
 
 @bot.event
-async def on_ready():
-    print("Bot is online")
+async def setup_hook():
     print(f"Logged in as: {bot.user.name}")
 
     # Database Scheduling
@@ -38,8 +37,7 @@ async def on_ready():
 
 
 async def main():
-    async with bot:
-        await load_extension()
-        await bot.start(TOKEN)
+    await load_extension()
+    await bot.start(TOKEN)
 
 asyncio.run(main())

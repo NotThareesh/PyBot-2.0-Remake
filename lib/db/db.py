@@ -1,6 +1,7 @@
 from os.path import isfile
 from sqlite3 import connect
 from apscheduler.triggers.cron import CronTrigger
+from datetime import datetime
 
 DB_PATH = "data/db/database.db"
 BUILD_PATH = "data/db/build.sql"
@@ -26,10 +27,11 @@ def build():
 
 def commit():
     cxn.commit()
+    print("Database Committed", datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
 def autosave(sched):
-    sched.add_job(commit, CronTrigger(second=30))
+    sched.add_job(commit, 'interval', seconds=30)
 
 
 def close():

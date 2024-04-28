@@ -1,5 +1,5 @@
 from discord.ext.commands import Cog
-from discord.ext.commands.errors import CommandNotFound, CommandOnCooldown, MissingPermissions, MissingRequiredArgument, BadArgument
+from discord.ext.commands.errors import CommandNotFound, CommandOnCooldown, MissingPermissions, MissingRequiredArgument, BadArgument, BotMissingPermissions, CommandInvokeError
 from discord.errors import Forbidden
 from ..db import db
 
@@ -21,18 +21,19 @@ class Events(Cog):
             pass
 
         elif isinstance(error, CommandOnCooldown):
-            await ctx.send(f"Command is on {str(error.cooldown.type).split('.')[-1].capitalize()} cooldown. Please retry after {error.retry_after:,.2f} seconds.", delete_after=5.0)
+            await ctx.reply(f"Command is on {str(error.cooldown.type).split('.')[-1].capitalize()} cooldown. Please retry after {error.retry_after:,.2f} seconds.", ephemeral=True)
 
         elif isinstance(error, MissingRequiredArgument):
-            await ctx.send(f"One or more required arguments are missing.", delete_after=5.0)
+            await ctx.reply(f"One or more required arguments are missing.", ephemeral=True)
 
         elif isinstance(error, MissingPermissions):
-            await ctx.send(f"@{ctx.author} doesn't have the required permissions.", delete_after=5.0)
+            await ctx.reply(f"@{ctx.author} doesn't have the required permissions.", ephemeral=True)
 
-        elif isinstance(error, Forbidden):
-            await ctx.send(f"I am not allowed to do it. Please check my permissions.", delete_after=5.0)
+        elif isinstance(error, BotMissingPermissions):
+            await ctx.reply(f"I don't have the required permissions.", ephemeral=True)
 
         else:
+            await self.bot.get_channel(778465578834853918).send("Something went wrong... Check the logs!")
             print(error)
 
     @Cog.listener()

@@ -1,6 +1,7 @@
 from discord import Embed, Status, Game, Activity, ActivityType, Colour
 from discord.ext import tasks
-from discord.ext.commands import Cog, command, BucketType, cooldown
+from discord.ext.commands import Cog, command, BucketType, cooldown, hybrid_command, is_owner
+from discord import app_commands
 import random
 
 
@@ -40,13 +41,13 @@ class Discord(Cog):
             await self.bot.change_presence(activity=Activity(type=ActivityType.watching,
                                                              name=status))
 
-    @command(description="Sends a server invitation", aliases=['link'])
+    @hybrid_command(description="Sends a server invitation", aliases=['link'])
     @cooldown(1, 5, BucketType.user)
     async def invite(self, ctx):
         link = await ctx.channel.create_invite(max_age=86400)
-        await ctx.send(f"Here is an instant invite to this server:\n{link}")
+        await ctx.reply(f"Here is an instant invite to this server:\n{link}")
 
-    @command(description="Sends info about the server", aliases=["info"])
+    @hybrid_command(description="Sends info about the server", aliases=["info"])
     @cooldown(1, 5, BucketType.user)
     async def server(self, ctx):
         embed = Embed(
@@ -54,8 +55,6 @@ class Discord(Cog):
 
         embed.add_field(name="Owner", value=ctx.guild.owner.name, inline=False)
         embed.add_field(name="Server ID", value=ctx.guild.id)
-        embed.add_field(name="Region", value=str(
-            ctx.guild.region).capitalize())
         embed.add_field(name="\u200b", value="\u200b")
         embed.add_field(name="Humans Count", value=len(
             list(filter(lambda user: not user.bot, ctx.guild.members))))
@@ -67,9 +66,15 @@ class Discord(Cog):
         embed.add_field(name="Voice Channels",
                         value=len(ctx.guild.voice_channels))
 
-        embed.set_thumbnail(url=ctx.guild.icon_url)
+        embed.set_thumbnail(url=ctx.guild.icon)
 
         await ctx.send(embed=embed)
+
+    # @command(description="Sync Commands")
+    # @is_owner()
+    # async def sync(self, ctx):
+    #     await ctx.bot.tree.sync()
+    #     await ctx.reply(f'Synced Commands in all Guilds')
 
 
 async def setup(bot):

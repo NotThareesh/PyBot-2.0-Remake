@@ -1,5 +1,5 @@
 import discord
-from discord.ext.commands import Cog, command, has_permissions
+from discord.ext.commands import Cog, hybrid_command, has_permissions
 from typing import Optional
 from better_profanity import profanity
 from ..db import db
@@ -43,33 +43,32 @@ class Mod(Cog):
             prefix = db.field(
                 "SELECT Prefix FROM guilds WHERE GuildID = ?", message.guild.id)
 
-            await message.channel.send(f"Use **{prefix}help** to invoke the help command.")
+            await message.channel.send(f"Use **{prefix}help** to invoke the help command")
 
-    @command(description="Deletes messages in a particular channel")
+    @hybrid_command(description="Deletes messages in a particular channel")
     @has_permissions(administrator=True, manage_channels=True)
     async def clear(self, ctx, amount: Optional[int]):
         if amount <= 0:
-            await ctx.send("Please provide a valid number")
-        elif amount > 100:
-            await ctx.send("Please provide a smaller number")
+            await ctx.reply("Please provide a valid number")
+        elif amount > 50:
+            await ctx.reply("Please provide a smaller number")
         else:
-            await ctx.send(f"Tidying up your server")
-            await ctx.channel.purge(limit=amount+2)
+            await ctx.reply(f"Tidying up your server")
+            await ctx.channel.purge(limit=amount+2, bulk=True)
 
-    @command(description="Kicks members out of the server")
+    @hybrid_command(description="Kicks members out of the server")
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member):
         await member.kick()
+        await ctx.reply(f"{member.mention} was kicked!")
 
-        await ctx.send(f"{member.mention} was kicked!")
-
-    @command(description="Bans Members from the server")
+    @hybrid_command(description="Bans Members from the server")
     @has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason=Optional[str]):
-        await member.ban(reason=reason)
-        await ctx.send(f"{member} was **banned**")
+    async def ban(self, ctx, member: discord.Member, *, reason: Optional[str]):
+        await ctx.guild.ban(user=member, reason=reason)
+        await ctx.reply(f"{member} was **banned**")
 
-    @command(description="Unbans Members from the server")
+    @hybrid_command(description="Unbans Members from the server")
     @has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         banned_users = await ctx.guild.bans()
@@ -80,11 +79,11 @@ class Mod(Cog):
 
             if (user.name, user.discriminator) == (member_name, member_discriminator):
                 await ctx.guild.unban(user)
-                await ctx.send(f"{member.mention} was unbanned")
+                await ctx.reply(f"{member.mention} was unbanned")
 
                 return
 
-    @command(description="Control Profanity Filter")
+    @hybrid_command(description="Control Profanity Filter")
     @has_permissions(manage_messages=True)
     async def profanity(self, ctx, value: Optional[str]):
         if not value is None:
@@ -94,19 +93,19 @@ class Mod(Cog):
 
                 self.data[ctx.guild.id][1] = 1
 
-                await ctx.send("Profanity filter is enabled in this server")
+                await ctx.reply("Profanity filter is enabled in this server")
             elif value.lower() in ('0', 'false', 'disable'):
                 db.execute(
                     "UPDATE guilds SET Profanity = ? WHERE GuildID = ?", 0, ctx.guild.id)
 
                 self.data[ctx.guild.id][1] = 0
 
-                await ctx.send("Profanity filter is disabled in this server")
+                await ctx.reply("Profanity filter is disabled in this server")
         else:
             if db.execute("SELECT Profanity FROM guilds WHERE GuildID = ?", ctx.guild.id) == 1:
-                await ctx.send("Profanity filter is enabled")
+                await ctx.reply("Profanity filter is enabled")
             else:
-                await ctx.send("Profanity filter is disabled")
+                await ctx.reply("Profanity filter is disabled")
 
 
 async def setup(bot):
